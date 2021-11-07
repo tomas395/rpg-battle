@@ -37,14 +37,9 @@ const BattleContainer = () => {
 
   useEffect(() => {
     if (queueIndex !== null && queueIndex !== prevQueueIndex.current) {
-      console.log(
-        `useEffect, queueIndex: ${queueIndex}, prevQueueIndex: ${prevQueueIndex.current}`
-      );
-
       prevQueueIndex.current = queueIndex;
 
       if (queue[queueIndex]) {
-        console.log(queue[queueIndex]);
         const { type, actor, target } = queue[queueIndex];
 
         // TODO: randomize target selection from target group (only pass target group in queue object, no target index needed)
@@ -124,10 +119,6 @@ const BattleContainer = () => {
 
   useEffect(() => {
     if (gameState !== prevGameState.current) {
-      console.log(
-        `useEffect, gameState: ${gameState}, prevGameState: ${prevGameState.current}`
-      );
-
       // enemy pre-emptive attack chance
       if (prevGameState.current === NEW_GAME) {
         // TODO: maybe check speed or luck or something
