@@ -102,14 +102,14 @@ const generateEntityAnimations = (isEnemy: boolean) => ({
     bottom: isEnemy ? undefined : 0,
   },
   [HURT]: {
-    frames: 0,
-    duration: 500,
+    frames: [0, -1, 0, -1, 0, -1, 0],
+    duration: 1000,
     top: isEnemy ? 0 : undefined,
     bottom: isEnemy ? undefined : 0,
   },
   [DYING]: {
     frames: 0,
-    duration: 500,
+    duration: 150,
     top: isEnemy ? 0 : undefined,
     bottom: isEnemy ? undefined : 0,
   },

@@ -101,29 +101,13 @@ const BattleContainer = () => {
           }
         }
 
-        // TODO: we need to look at actor/target(s) attributes, weapons/armor, etc. here to determine damage, success
-
         const newTarget = {
           group: targetGroup,
           index: targetIndex,
         };
 
-        // TODO: need get average position of group/groups instead of falling back to 50% (though 50% would be a valid fallback for anything larger than a single group)
-        const left =
-          targetIndex !== undefined
-            ? groups[targetGroup].entities[targetIndex].leftPosition
-            : '50%';
-
-        console.log(type);
-
-        const mainAnimationData = {
-          type: SLASH, // TODO: use action type to determine this
-          duration: actorEntity.animations[SLASH].duration,
-          left,
-        };
-
         // TODO: use action type to determine what thunk to dispatch
-        dispatch(attackThunk(actor, newTarget, mainAnimationData));
+        dispatch(attackThunk(actor, newTarget));
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
       } else {
@@ -161,13 +145,7 @@ const BattleContainer = () => {
       } else if (gameState === NEW_GAME) {
         dispatch(newGameThunk());
       } else if (gameState === POST_EXECUTION) {
-        dispatch(
-          postExecutionThunk(
-            groups[PLAYER_GROUP],
-            groups[LEFT_ENEMY_GROUP],
-            groups[RIGHT_ENEMY_GROUP]
-          )
-        );
+        dispatch(postExecutionThunk());
       }
 
       prevGameState.current = gameState;

@@ -4,6 +4,16 @@ export const SPRITE_MULTIPLIER = 3;
 // multiplier is used to uniformly scale all pixel art assets up
 // usage: actual size = (desired size in px) * multiplier
 
+export const ANIMATION_DURATION_MAP = {
+  IDLE: 600,
+  SLASH: 600,
+  SHOOT: 600,
+  USE: 1000,
+  TARGETED: 600,
+  HURT: 1000,
+  DYING: 150,
+};
+
 export enum GameStatesEnum {
   INIT = 'INIT',
   NEW_GAME = 'NEW_GAME',

@@ -1,4 +1,10 @@
-import { createContext, Dispatch, useReducer, useCallback } from 'react';
+import {
+  createContext,
+  Dispatch,
+  useReducer,
+  useRef,
+  useCallback,
+} from 'react';
 
 import { AppStateType, ActionType } from '../types';
 import {
@@ -35,19 +41,22 @@ export const AppStateContext = createContext<[AppStateType, Dispatch<any>]>([
   () => null,
 ]);
 
-// TODO
+// TODO: ts
 export const AppStateProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const prevState = useRef();
 
   let customDispatch = useCallback((action: ActionType | void) => {
     if (typeof action === 'function') {
       // @ts-ignore
-      action(customDispatch);
+      action(customDispatch, () => prevState.current);
     } else {
       // @ts-ignore
       dispatch(action);
     }
   }, []);
+
+  prevState.current = state;
 
   return (
     <AppStateContext.Provider value={[state, customDispatch]}>

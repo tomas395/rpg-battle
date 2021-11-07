@@ -15,6 +15,7 @@ import {
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
   PLAYER_GROUP,
+  NEW_GAME,
 } from '../constants';
 import Window from './Window';
 import Dissolve from './Dissolve';
@@ -86,15 +87,6 @@ const MainBattleSection = () => {
                   visibility: status === DEAD ? 'hidden' : undefined,
                   height: '100%',
                   width: '100%',
-                  transformOrigin: 'bottom right',
-                  animation:
-                    animationType === HURT || animationType === DYING
-                      ? 'shake 0.5s'
-                      : undefined,
-                  animationIterationCount:
-                    animationType === HURT || animationType === DYING
-                      ? 'infinite'
-                      : undefined,
                 }}
               />
             </Dissolve>
@@ -140,21 +132,13 @@ const MainBattleSection = () => {
                 style={{
                   visibility:
                     status === DEAD ||
-                    (gameState !== PLAYER_INPUT && animationType === IDLE)
+                    (gameState !== NEW_GAME &&
+                      gameState !== PLAYER_INPUT &&
+                      animationType === IDLE)
                       ? 'hidden'
                       : undefined,
                   height: '100%',
                   width: '100%',
-                  transformOrigin: 'bottom right',
-                  transform: `rotate(${status === DEAD ? 90 : 0}deg)`,
-                  animation:
-                    animationType === HURT || animationType === DYING
-                      ? 'shake 0.5s'
-                      : undefined,
-                  animationIterationCount:
-                    animationType === HURT || animationType === DYING
-                      ? 'infinite'
-                      : undefined,
                 }}
               />
             </div>
