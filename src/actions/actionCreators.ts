@@ -17,7 +17,6 @@ import {
 } from './actionTypes';
 import {
   AppStateType,
-  EntityGroupType,
   ActionType,
   TargetType,
   EntityActionType,

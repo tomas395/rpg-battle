@@ -8,7 +8,6 @@ import {
   NEW_GAME,
   PLAYER_GROUP,
   RIGHT_ENEMY_GROUP,
-  SLASH,
 } from '../constants';
 import { generateQueue } from '../utils';
 import Battle from '../pages/Battle';
@@ -102,6 +101,7 @@ const BattleContainer = () => {
         };
 
         // TODO: use action type to determine what thunk to dispatch
+        console.log(type);
         dispatch(attackThunk(actor, newTarget));
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
