@@ -17,10 +17,10 @@ import {
 } from './actionTypes';
 import {
   AppStateType,
-  EntityGroupType,
   ActionType,
   TargetType,
   EntityActionType,
+  ActorType,
 } from '../types';
 import {
   EXECUTING,
@@ -37,6 +37,8 @@ import {
   PLAYER_GROUP,
   RIGHT_ENEMY_GROUP,
   LEFT_ENEMY_GROUP,
+  SLASH,
+  ANIMATION_DURATION_MAP,
 } from '../constants';
 
 export const startNewGame = (newGameState: AppStateType) => ({
@@ -140,34 +142,40 @@ export const newGameThunk = () => async (dispatch: Dispatch<ActionType>) => {
   dispatch(setGameState(EXECUTING));
 };
 
-// TODO: maybe pass in full actor/target objects, then we can use attributes and equipped weapons/armor to determine damage dealt, likelihood of missing, targeting behavior, number of attacks, etc.
-// if no index passed, would we then need an array of full group entity objects?
 export const attackThunk =
-  (
-    actor: TargetType,
-    target: TargetType,
-    mainAnimationData: {
-      type: AnimationTypesEnum;
-      duration: number;
-      left?: number | string;
-    }
-  ) =>
-  async (dispatch: Dispatch<ActionType>) => {
-    const { group: actorGroup } = actor;
-    // TODO: something off about this implementation, the only reason we need to pass duration here is to use it in the first animation timeout...
-    const { duration } = mainAnimationData;
+  (actor: ActorType, target: TargetType) =>
+  async (dispatch: Dispatch<ActionType>, getState: any) => {
+    const { groups } = getState();
 
-    dispatch(setEntityAnimation(actor, mainAnimationData));
+    const { group: actorGroup, index: actorIndex } = actor;
+    const actorEntity = groups[actorGroup].entities[actorIndex];
+    const { group: targetGroup, index: targetIndex } = target;
+
+    // TODO: check actor equipped weapon from state to determine which animation to trigger (SLASH vs SHOOT, etc.)
+    const attackAnimationType = SLASH;
+    // TODO: need get average position of group/groups instead of falling back to 50% (though 50% would be a valid fallback for anything larger than a single group)
+    const targetLeftPosition =
+      targetIndex !== undefined
+        ? groups[targetGroup].entities[targetIndex].leftPosition
+        : '50%';
+
+    dispatch(
+      setEntityAnimation(actor, {
+        type: attackAnimationType,
+        left: targetLeftPosition,
+      })
+    );
     dispatch(
       setEntityAnimation(target, {
         type: TARGETED,
-        left: target.group === PLAYER_GROUP ? actor.leftPosition : undefined,
+        left:
+          targetGroup === PLAYER_GROUP ? actorEntity.leftPosition : undefined,
       })
     );
-    await timeout(duration);
+    await timeout(ANIMATION_DURATION_MAP[attackAnimationType]);
     dispatch(setEntityAnimation(actor, IDLE));
 
-    // TODO: use full objects for actor and target/s to determine who gets hit and for how much
+    // TODO: use full actor and target entities from state to determine who gets hit and for how much
     // TODO: loop over target group if array
     const attackPower = Math.floor(Math.random() * 5);
     let crit = false;
@@ -192,13 +200,17 @@ export const attackThunk =
           })
         );
       }
+      // TODO: may have to implement some weird offset cascade of each animation dispatch for group attacks
       dispatch(
         setEntityAnimation(target, {
           type: HURT,
-          left: target.group === PLAYER_GROUP ? actor.leftPosition : undefined,
+          left:
+            target.group === PLAYER_GROUP
+              ? actorEntity.leftPosition
+              : undefined,
         })
       );
-      await timeout(1000);
+      await timeout(ANIMATION_DURATION_MAP[HURT]);
       if (actorGroup === PLAYER_GROUP) {
         dispatch(
           setGroupMessage({
@@ -243,17 +255,20 @@ export const attackThunk =
   };
 
 export const postExecutionThunk =
-  (
-    heroes: EntityGroupType,
-    leftEnemies: EntityGroupType,
-    rightEnemies: EntityGroupType
-  ) =>
-  async (dispatch: Dispatch<ActionType>) => {
+  () => async (dispatch: Dispatch<ActionType>, getState: any) => {
+    const {
+      groups: {
+        [PLAYER_GROUP]: playerGroup,
+        [LEFT_ENEMY_GROUP]: leftEnemyGroup,
+        [RIGHT_ENEMY_GROUP]: rightEnemyGroup,
+      },
+    } = getState();
+
     let livingHeroes = 0;
     let livingLeft = 0;
     let livingRight = 0;
 
-    for (const [index, hero] of heroes.entities.entries()) {
+    for (const [index, hero] of playerGroup.entities.entries()) {
       const { status, currentAnimation, hp } = hero;
 
       // TODO: will need to account for paralyzed as well
@@ -269,24 +284,24 @@ export const postExecutionThunk =
             { type: DYING, left: -1 } // TODO: -1 thing is kind of hacky, maybe formalize into a preservePosition flag
           )
         );
-        await timeout(1000);
+        await timeout(ANIMATION_DURATION_MAP[DYING]);
         dispatch(setEntityStatus({ group: PLAYER_GROUP, index }, DEAD));
         dispatch(setEntityAnimation({ group: PLAYER_GROUP, index }, IDLE));
       }
     }
-    for (const [index, enemy] of leftEnemies.entities.entries()) {
+    for (const [index, enemy] of leftEnemyGroup.entities.entries()) {
       const { status, currentAnimation, hp } = enemy;
 
       if (hp > 0 && status === OK) {
         livingLeft++;
       } else if (currentAnimation.type !== DYING && status !== DEAD) {
         dispatch(setEntityAnimation({ group: LEFT_ENEMY_GROUP, index }, DYING));
-        await timeout(1000);
+        await timeout(ANIMATION_DURATION_MAP[DYING]);
         dispatch(setEntityStatus({ group: LEFT_ENEMY_GROUP, index }, DEAD));
         dispatch(setEntityAnimation({ group: LEFT_ENEMY_GROUP, index }, IDLE));
       }
     }
-    for (const [index, enemy] of rightEnemies.entities.entries()) {
+    for (const [index, enemy] of rightEnemyGroup.entities.entries()) {
       const { status, currentAnimation, hp } = enemy;
 
       if (hp > 0 && status === OK) {
@@ -295,7 +310,7 @@ export const postExecutionThunk =
         dispatch(
           setEntityAnimation({ group: RIGHT_ENEMY_GROUP, index }, DYING)
         );
-        await timeout(1000);
+        await timeout(ANIMATION_DURATION_MAP[DYING]);
         dispatch(setEntityStatus({ group: RIGHT_ENEMY_GROUP, index }, DEAD));
         dispatch(setEntityAnimation({ group: RIGHT_ENEMY_GROUP, index }, IDLE));
       }

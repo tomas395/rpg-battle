@@ -18,6 +18,7 @@ const spriteAnimation = (frames: any) => keyframes`
 const SpriteContainer: React.FC<any> = styled.div`
   background: url('./assets/${({ spriteImg }: any) => spriteImg}.png');
   background-size: auto ${({ width }: any) => width * SPRITE_MULTIPLIER}px;
+  background-repeat: no-repeat;
   ${({ frames, duration }: any) => {
     if (!Array.isArray(frames)) {
       return css`

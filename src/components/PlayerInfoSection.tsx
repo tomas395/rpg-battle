@@ -29,7 +29,6 @@ const {
 const PlayerInfo = styled.section`
   display: flex;
   justify-content: center;
-  background-color: #000080;
   flex: 0 0 170px;
   height: 170px;
 `;

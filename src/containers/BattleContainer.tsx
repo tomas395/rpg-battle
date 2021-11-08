@@ -8,7 +8,6 @@ import {
   NEW_GAME,
   PLAYER_GROUP,
   RIGHT_ENEMY_GROUP,
-  SLASH,
 } from '../constants';
 import { generateQueue } from '../utils';
 import Battle from '../pages/Battle';
@@ -37,14 +36,9 @@ const BattleContainer = () => {
 
   useEffect(() => {
     if (queueIndex !== null && queueIndex !== prevQueueIndex.current) {
-      console.log(
-        `useEffect, queueIndex: ${queueIndex}, prevQueueIndex: ${prevQueueIndex.current}`
-      );
-
       prevQueueIndex.current = queueIndex;
 
       if (queue[queueIndex]) {
-        console.log(queue[queueIndex]);
         const { type, actor, target } = queue[queueIndex];
 
         // TODO: randomize target selection from target group (only pass target group in queue object, no target index needed)
@@ -101,29 +95,14 @@ const BattleContainer = () => {
           }
         }
 
-        // TODO: we need to look at actor/target(s) attributes, weapons/armor, etc. here to determine damage, success
-
         const newTarget = {
           group: targetGroup,
           index: targetIndex,
         };
 
-        // TODO: need get average position of group/groups instead of falling back to 50% (though 50% would be a valid fallback for anything larger than a single group)
-        const left =
-          targetIndex !== undefined
-            ? groups[targetGroup].entities[targetIndex].leftPosition
-            : '50%';
-
-        console.log(type);
-
-        const mainAnimationData = {
-          type: SLASH, // TODO: use action type to determine this
-          duration: actorEntity.animations[SLASH].duration,
-          left,
-        };
-
         // TODO: use action type to determine what thunk to dispatch
-        dispatch(attackThunk(actor, newTarget, mainAnimationData));
+        console.log(type);
+        dispatch(attackThunk(actor, newTarget));
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
       } else {
@@ -140,10 +119,6 @@ const BattleContainer = () => {
 
   useEffect(() => {
     if (gameState !== prevGameState.current) {
-      console.log(
-        `useEffect, gameState: ${gameState}, prevGameState: ${prevGameState.current}`
-      );
-
       // enemy pre-emptive attack chance
       if (prevGameState.current === NEW_GAME) {
         // TODO: maybe check speed or luck or something
@@ -161,13 +136,7 @@ const BattleContainer = () => {
       } else if (gameState === NEW_GAME) {
         dispatch(newGameThunk());
       } else if (gameState === POST_EXECUTION) {
-        dispatch(
-          postExecutionThunk(
-            groups[PLAYER_GROUP],
-            groups[LEFT_ENEMY_GROUP],
-            groups[RIGHT_ENEMY_GROUP]
-          )
-        );
+        dispatch(postExecutionThunk());
       }
 
       prevGameState.current = gameState;

@@ -94,12 +94,10 @@ export interface EntityActionType {
 export interface ActorType {
   group: GroupsEnum;
   index: number;
-  leftPosition?: number | string;
 }
 
 export interface TargetType {
   group: GroupsEnum;
   // | Array<GroupsEnum>;
   index?: number;
-  leftPosition?: number | string;
 }

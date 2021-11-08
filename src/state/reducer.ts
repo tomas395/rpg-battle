@@ -26,7 +26,6 @@ const {
 } = actionTypes;
 
 const reducer = (state: AppStateType, action: ActionType) => {
-  console.log(action);
   const { type, payload } = action;
 
   switch (type) {
@@ -45,7 +44,6 @@ const reducer = (state: AppStateType, action: ActionType) => {
       };
     }
     case WIN_GAME: {
-      console.log('WIN_GAME');
       return {
         ...state,
         gameState: GAME_WON,
@@ -53,7 +51,6 @@ const reducer = (state: AppStateType, action: ActionType) => {
       };
     }
     case LOSE_GAME: {
-      console.log('LOSE_GAME');
       return {
         ...state,
         gameState: GAME_LOST,
@@ -73,7 +70,6 @@ const reducer = (state: AppStateType, action: ActionType) => {
       };
     }
     case SET_GAME_STATE: {
-      console.log(`SET_GAME_STATE: ${payload}`);
       return {
         ...state,
         gameState: payload,
