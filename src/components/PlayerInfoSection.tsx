@@ -29,15 +29,15 @@ const {
 const PlayerInfo = styled.section`
   display: flex;
   justify-content: center;
-  flex: 0 0 170px;
-  height: 170px;
+  flex: 0 0 30%;
+  height: 30%;
 `;
 
 const PlayerMenu = styled(Window)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 1.1px;
+  width: 16%;
   order: 1;
 `;
 

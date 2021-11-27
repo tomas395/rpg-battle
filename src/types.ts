@@ -63,8 +63,8 @@ export interface EntityGroupType {
 export interface AnimationType {
   frames: number | number[];
   duration: number;
-  top?: number;
-  bottom?: number;
+  top?: number | string;
+  bottom?: number | string;
 }
 
 export interface ItemType {}

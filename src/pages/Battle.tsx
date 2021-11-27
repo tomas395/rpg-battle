@@ -30,7 +30,7 @@ const BattleWindow = styled((props: any) => <div {...props} />)`
   flex-direction: column;
   align-items: stretch;
   aspect-ratio: 4 / 3;
-  width: 125vmin; // TODO: change this to 133.33vmin as soon as nav is moved out of page flow (probably dedicated modal window)
+  width: 133.33vmin;
   overflow: hidden;
   outline: 4px solid #000088;
 

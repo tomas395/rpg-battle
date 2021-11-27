@@ -1,48 +1,56 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled, { keyframes } from 'styled-components';
 
-import { SPRITE_MULTIPLIER } from '../constants';
+import { AppStateContext } from '../state';
 
-const dissolveAnimation = keyframes`
+const dissolveAnimation = (pixelMultiplier: number) => keyframes`
   from {
     mask-position: 0 0px;
   }
   to {
-    mask-position: 0 -${1216 * SPRITE_MULTIPLIER}px;
+    mask-position: 0 -${1216 * pixelMultiplier}px;
   }
 `;
 
 const DissolveContainer = styled((props) => <div {...props} />)`
-  width: ${({ width }) => width * SPRITE_MULTIPLIER}px;
+  width: ${({ width, pixelMultiplier }) => width * pixelMultiplier}px;
   mask: url(./assets/gradient-mask.png);
-  mask-size: ${128 * SPRITE_MULTIPLIER}px auto;
-  animation: ${dissolveAnimation} 3s steps(20) forwards
-    ${({ infinite }) => (infinite ? ' infinite' : '')}
-    ${({ reverse }) => (reverse ? '' : ' reverse')};
+  mask-size: ${({ pixelMultiplier }) => 128 * pixelMultiplier}px auto;
+  mask-position: 0 -${({ pixelMultiplier }) => 1216 * pixelMultiplier}px;
+  animation: ${({ pixelMultiplier }) => dissolveAnimation(pixelMultiplier)} 3s
+    steps(20) forwards 1 ${({ reverse }) => (reverse ? '' : ' reverse')};
+  animation-name: ${({ dissolving, pixelMultiplier }) =>
+    dissolving ? dissolveAnimation(pixelMultiplier) : 'none'};
 `;
 
 interface DissolveProps {
+  dissolving: boolean;
   reverse?: boolean;
-  infinite?: boolean;
   width?: number;
   style?: object;
 }
 
 const Dissolve: React.FC<DissolveProps> = ({
+  dissolving,
   children,
   reverse,
-  infinite,
   width,
   style,
-}) => (
-  <DissolveContainer
-    reverse={reverse}
-    infinite={infinite}
-    width={width}
-    style={style}
-  >
-    {children}
-  </DissolveContainer>
-);
+}) => {
+  const [state] = useContext(AppStateContext);
+  const { pixelMultiplier } = state;
+
+  return (
+    <DissolveContainer
+      dissolving={dissolving}
+      reverse={reverse}
+      width={width}
+      style={style}
+      pixelMultiplier={pixelMultiplier}
+    >
+      {children}
+    </DissolveContainer>
+  );
+};
 
 export default Dissolve;

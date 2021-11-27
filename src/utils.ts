@@ -80,7 +80,7 @@ const generateEntityAnimations = (isEnemy: boolean) => ({
   [SLASH]: {
     frames: isEnemy ? [2, 3] : [3, 3, 4, 5, 6, 6],
     duration: 600,
-    top: isEnemy ? 0 : 64,
+    top: isEnemy ? 0 : '20%',
     bottom: isEnemy ? undefined : 0,
   },
   [SHOOT]: {

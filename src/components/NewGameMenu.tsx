@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 import { AppStateContext } from '../state';
 import { actionCreators } from '../actions';
@@ -81,9 +82,7 @@ const NewGameMenu = () => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 500,
-        height: 200,
-        padding: '1.5rem 0 0',
+        padding: '2rem',
         zIndex: 10, // TODO: might be worth building a simple dialog controller for windows like this
       }}
     >
@@ -139,6 +138,8 @@ const NewGameMenu = () => {
       >
         Start Game
       </Button>
+      <br />
+      <Link to="/staging">Exit</Link>
     </Window>
   );
 };
