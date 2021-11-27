@@ -16,13 +16,7 @@ import {
   SET_ENTITY_STATUS,
   ENTITY_DAMAGE,
 } from './actionTypes';
-import {
-  // AppStateType,
-  ActionType,
-  TargetType,
-  EntityActionType,
-  ActorType,
-} from '../types';
+import { ActionType, TargetType, EntityActionType, ActorType } from '../types';
 import {
   EXECUTING,
   POST_EXECUTION,

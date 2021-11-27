@@ -1,9 +1,3 @@
-// TODO: this probably belongs in a config file or something
-export const SPRITE_MULTIPLIER = 3;
-// all images at native dimensions (tiny)
-// multiplier is used to uniformly scale all pixel art assets up
-// usage: actual size = (desired size in px) * multiplier
-
 export const ANIMATION_DURATION_MAP = {
   IDLE: 600,
   SLASH: 600,

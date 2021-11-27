@@ -12,7 +12,6 @@ import {
 import { generateQueue } from '../utils';
 import Battle from '../pages/Battle';
 
-// TODO: fix name collisions
 const { PLAYER_INPUT, POST_EXECUTION } = GameStatesEnum;
 
 const {
@@ -39,7 +38,7 @@ const BattleContainer = () => {
       prevQueueIndex.current = queueIndex;
 
       if (queue[queueIndex]) {
-        const { type, actor, target } = queue[queueIndex];
+        const { actor, target } = queue[queueIndex];
 
         // TODO: randomize target selection from target group (only pass target group in queue object, no target index needed)
         const { group: actorGroup, index: actorIndex } = actor;
@@ -101,7 +100,6 @@ const BattleContainer = () => {
         };
 
         // TODO: use action type to determine what thunk to dispatch
-        console.log(type);
         dispatch(attackThunk(actor, newTarget));
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
