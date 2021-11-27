@@ -44,7 +44,7 @@ const PlayerMenu = styled(Window)`
 
 const PlayerButton = styled.button`
   background-color: red;
-  padding: 10px;
+  padding: 5%;
 `;
 
 const PlayerInfoSection = () => {
@@ -148,7 +148,7 @@ const PlayerInfoSection = () => {
             dispatch(setPlayerInterrupt(true));
           }}
         >
-          Interrupt
+          Stop
         </button>
         <button
           onClick={() => {
