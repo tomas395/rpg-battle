@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import './Reset.css';
 import './App.css';
@@ -13,6 +13,15 @@ import { actionCreators } from './actions';
 
 const { setPixelMultiplier } = actionCreators;
 
+const slideAnimation = (pixelMultiplier: number) => keyframes`
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: ${320 * pixelMultiplier}px;
+  }
+`;
+
 const AppContainer = styled((props) => <main {...props} />)`
   color: #e5e4e2;
   text-align: center;
@@ -24,9 +33,13 @@ const AppContainer = styled((props) => <main {...props} />)`
   display: flex;
   flex-direction: column;
   background: url('./assets/star-bg.png');
-  background-size: auto ${({ pixelMultiplier }: any) => 240 * pixelMultiplier}px;
+  background-size: ${({ pixelMultiplier }) => 320 * pixelMultiplier}px
+    ${({ pixelMultiplier }) => 240 * pixelMultiplier}px;
   background-repeat: repeat;
-  font-size: ${({ pixelMultiplier }: any) => 8 * pixelMultiplier}px;
+  font-size: ${({ pixelMultiplier }) => 8 * pixelMultiplier}px;
+  animation: ${({ pixelMultiplier }) => slideAnimation(pixelMultiplier)} 60s
+    linear infinite;
+  animation-fill-mode: forwards;
 `;
 
 export default function App() {
