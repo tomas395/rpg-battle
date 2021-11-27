@@ -1,21 +1,20 @@
 import { useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { AppStateContext } from '../../state';
-import { actionCreators } from '../../actions';
+import { AppStateContext } from '../state';
+import { actionCreators } from '../actions';
 import {
   NEW_GAME,
-  GAME_WON,
-  GAME_LOST,
   FROGGY,
   SAKOFF,
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
-} from '../../constants';
-import { generateHeroes, generateEnemies } from '../../utils';
-import Window from '../Window';
+} from '../constants';
+import { generateHeroes, generateEnemies } from '../utils';
+import Window from '../components/Window';
 
 const { startNewGame: startNewGameAction } = actionCreators;
 
@@ -30,8 +29,8 @@ const Button = styled.button`
 `;
 
 const NewGameMenu = () => {
-  const [state, dispatch] = useContext(AppStateContext);
-  const { gameState } = state;
+  const history = useHistory();
+  const [, dispatch] = useContext(AppStateContext);
   const [numHeroes, setNumHeroes] = useState(4);
   const [leftEnemyCount, setLeftEnemyCount] = useState(2);
   const [rightEnemyCount, setRightEnemyCount] = useState(1);
@@ -73,6 +72,7 @@ const NewGameMenu = () => {
     };
 
     dispatch(startNewGameAction(newGameData));
+    history.push('/battle');
   };
 
   return (
@@ -86,13 +86,9 @@ const NewGameMenu = () => {
         zIndex: 10, // TODO: might be worth building a simple dialog controller for windows like this
       }}
     >
-      <div>
-        {gameState === GAME_WON
-          ? 'You win! :)'
-          : gameState === GAME_LOST
-          ? 'You lose! :('
-          : "Let's go!"}
-      </div>
+      <h3>Let's go!</h3>
+      --------------
+      <br />
       <label htmlFor="numHeroes">Heroes: </label>
       <input
         type="number"
@@ -132,14 +128,18 @@ const NewGameMenu = () => {
         max={leftEnemyCount === 3 ? 1 : leftEnemyCount === 2 ? 2 : 3}
       />
       <br />
+      --------------
+      <br />
       <Button
         onClick={startNewGame}
         disabled={leftEnemyCount + rightEnemyCount <= 0}
       >
         Start Game
       </Button>
-      <br />
-      <Link to="/staging">Exit</Link>
+      --------------
+      <Link to="/">
+        <Button>Exit</Button>
+      </Link>
     </Window>
   );
 };

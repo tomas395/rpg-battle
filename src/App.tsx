@@ -6,7 +6,7 @@ import './Reset.css';
 import './App.css';
 import { AppStateContext } from './state';
 import Title from './pages/Title';
-import Staging from './pages/Staging';
+import NewGame from './pages/NewGame';
 import Battle from './pages/Battle';
 import About from './pages/About';
 import { actionCreators } from './actions';
@@ -55,7 +55,7 @@ export default function App() {
       <AppContainer pixelMultiplier={pixelMultiplier}>
         <Switch>
           <Route exact path="/" component={Title} />
-          <Route exact path="/staging" component={Staging} />
+          <Route exact path="/new-game" component={NewGame} />
           <Route exact path="/battle" component={Battle} />
           <Route exact path="/about" component={About} />
         </Switch>

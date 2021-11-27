@@ -17,6 +17,7 @@ import {
   NEW_GAME,
   POST_EXECUTION,
 } from '../../constants';
+import GameMenu from './GameMenu';
 import Window from '../Window';
 import Hero from './Hero';
 
@@ -51,6 +52,7 @@ const PlayerInfoSection = () => {
   const { gameState, queueIndex, playerInterrupt, groups } = state;
   // TODO: looking like this will need to be global (need to access it in several places, and be able to reset, etc.)
   const [activeHero, setActiveHero] = useState<number | undefined>();
+  const [gameMenuOpen, setGameMenuOpen] = useState<boolean>(false);
 
   const startNewRound = () => {
     const newQueue = generateQueue([
@@ -148,7 +150,26 @@ const PlayerInfoSection = () => {
         >
           Interrupt
         </button>
+        <button
+          onClick={() => {
+            dispatch(setPlayerInterrupt(true));
+            setGameMenuOpen(true);
+          }}
+        >
+          Exit
+        </button>
       </PlayerMenu>
+
+      {(gameMenuOpen ||
+        gameState === INIT ||
+        gameState === GAME_WON ||
+        gameState === GAME_LOST) && (
+        <GameMenu
+          handleClose={() => {
+            setGameMenuOpen(false);
+          }}
+        />
+      )}
     </PlayerInfo>
   );
 };

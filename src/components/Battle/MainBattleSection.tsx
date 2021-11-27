@@ -3,10 +3,7 @@ import styled from 'styled-components';
 
 import { AppStateContext } from '../../state';
 import {
-  INIT,
   PLAYER_INPUT,
-  GAME_WON,
-  GAME_LOST,
   DEAD,
   IDLE,
   LEFT_ENEMY_GROUP,
@@ -16,7 +13,6 @@ import {
 } from '../../constants';
 import Window from '../Window';
 import Dissolve from '../Dissolve';
-import NewGameMenu from './NewGameMenu';
 import AnimatedSprite from '../AnimatedSprite';
 
 const BattleSection = styled.section`
@@ -144,10 +140,6 @@ const MainBattleSection = () => {
       {Boolean(groups[PLAYER_GROUP].message) && (
         <MessageBox>{groups[PLAYER_GROUP].message}</MessageBox>
       )}
-
-      {(gameState === INIT ||
-        gameState === GAME_WON ||
-        gameState === GAME_LOST) && <NewGameMenu />}
     </BattleSection>
   );
 };

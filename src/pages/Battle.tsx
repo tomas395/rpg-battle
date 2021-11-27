@@ -116,7 +116,9 @@ const BattlePage = () => {
   }, [queueIndex, gameState, queue, groups, playerInterrupt, dispatch]);
 
   useEffect(() => {
-    if (gameState !== prevGameState.current) {
+    if (gameState === NEW_GAME) {
+      dispatch(newGameThunk());
+    } else if (gameState !== prevGameState.current) {
       // enemy pre-emptive attack chance
       if (prevGameState.current === NEW_GAME) {
         // TODO: maybe check speed or luck or something
@@ -131,8 +133,6 @@ const BattlePage = () => {
         } else {
           dispatch(setGameState(PLAYER_INPUT));
         }
-      } else if (gameState === NEW_GAME) {
-        dispatch(newGameThunk());
       } else if (gameState === POST_EXECUTION) {
         dispatch(postExecutionThunk());
       }
