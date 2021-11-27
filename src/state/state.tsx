@@ -16,6 +16,7 @@ import {
 import reducer from './reducer';
 
 export const initialState = {
+  pixelMultiplier: 1,
   gameState: INIT,
   queue: [],
   queueIndex: null,

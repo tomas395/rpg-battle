@@ -12,6 +12,7 @@ import {
 
 // TODO: review interface vs. type
 export interface AppStateType {
+  pixelMultiplier: number;
   gameState: GameStatesEnum;
   queue: EntityActionType[];
   queueIndex: number | null;

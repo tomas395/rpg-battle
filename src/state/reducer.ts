@@ -9,6 +9,7 @@ import {
   PLAYER_GROUP,
 } from '../constants';
 const {
+  SET_PIXEL_MULTIPLIER,
   START_NEW_GAME,
   START_NEW_ROUND,
   WIN_GAME,
@@ -29,6 +30,12 @@ const reducer = (state: AppStateType, action: ActionType) => {
   const { type, payload } = action;
 
   switch (type) {
+    case SET_PIXEL_MULTIPLIER: {
+      return {
+        ...state,
+        pixelMultiplier: payload,
+      };
+    }
     case START_NEW_GAME: {
       return {
         ...state,

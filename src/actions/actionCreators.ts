@@ -1,5 +1,6 @@
 import { Dispatch } from 'react';
 import {
+  SET_PIXEL_MULTIPLIER,
   START_NEW_GAME,
   START_NEW_ROUND,
   WIN_GAME,
@@ -16,7 +17,7 @@ import {
   ENTITY_DAMAGE,
 } from './actionTypes';
 import {
-  AppStateType,
+  // AppStateType,
   ActionType,
   TargetType,
   EntityActionType,
@@ -41,7 +42,13 @@ import {
   ANIMATION_DURATION_MAP,
 } from '../constants';
 
-export const startNewGame = (newGameState: AppStateType) => ({
+export const setPixelMultiplier = (multiplier: number) => ({
+  type: SET_PIXEL_MULTIPLIER,
+  payload: multiplier,
+});
+
+// TODO: ts
+export const startNewGame = (newGameState: any) => ({
   type: START_NEW_GAME,
   payload: newGameState,
 });
