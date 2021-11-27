@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
 
-import { AppStateContext } from '../state';
+import { AppStateContext } from '../../state';
 import {
   INIT,
   PLAYER_INPUT,
@@ -13,11 +13,11 @@ import {
   RIGHT_ENEMY_GROUP,
   PLAYER_GROUP,
   NEW_GAME,
-} from '../constants';
-import Window from './Window';
-import Dissolve from './Dissolve';
+} from '../../constants';
+import Window from '../Window';
+import Dissolve from '../Dissolve';
 import NewGameMenu from './NewGameMenu';
-import AnimatedSprite from './AnimatedSprite';
+import AnimatedSprite from '../AnimatedSprite';
 
 const BattleSection = styled.section`
   position: relative;

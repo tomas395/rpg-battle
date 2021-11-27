@@ -7,7 +7,7 @@ import './App.css';
 import { AppStateContext } from './state';
 import Title from './pages/Title';
 import Staging from './pages/Staging';
-import BattleContainer from './containers/BattleContainer';
+import Battle from './pages/Battle';
 import About from './pages/About';
 import { actionCreators } from './actions';
 
@@ -56,7 +56,7 @@ export default function App() {
         <Switch>
           <Route exact path="/" component={Title} />
           <Route exact path="/staging" component={Staging} />
-          <Route exact path="/battle" component={BattleContainer} />
+          <Route exact path="/battle" component={Battle} />
           <Route exact path="/about" component={About} />
         </Switch>
       </AppContainer>

@@ -1,9 +1,9 @@
 import { useState, useContext } from 'react';
 import styled from 'styled-components';
 
-import { AppStateContext } from '../state';
-import { actionCreators } from '../actions';
-import { generateQueue } from '../utils';
+import { AppStateContext } from '../../state';
+import { actionCreators } from '../../actions';
+import { generateQueue } from '../../utils';
 import {
   INIT,
   PLAYER_INPUT,
@@ -16,8 +16,8 @@ import {
   RIGHT_ENEMY_GROUP,
   NEW_GAME,
   POST_EXECUTION,
-} from '../constants';
-import Window from './Window';
+} from '../../constants';
+import Window from '../Window';
 import Hero from './Hero';
 
 const {

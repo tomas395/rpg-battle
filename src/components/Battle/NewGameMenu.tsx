@@ -2,8 +2,8 @@ import { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { AppStateContext } from '../state';
-import { actionCreators } from '../actions';
+import { AppStateContext } from '../../state';
+import { actionCreators } from '../../actions';
 import {
   NEW_GAME,
   GAME_WON,
@@ -13,9 +13,9 @@ import {
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
-} from '../constants';
-import { generateHeroes, generateEnemies } from '../utils';
-import Window from './Window';
+} from '../../constants';
+import { generateHeroes, generateEnemies } from '../../utils';
+import Window from '../Window';
 
 const { startNewGame: startNewGameAction } = actionCreators;
 
