@@ -2,22 +2,36 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 const TitleContainer = styled.div`
+  margin: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   height: 100%;
   width: 100%;
   background: url('./assets/title.png');
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  padding: 32px;
+`;
+
+const TitleMenu = styled((props: any) => <div {...props} />)`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  aspect-ratio: 4 / 3;
+  width: 133.33vmin;
+  overflow: hidden;
+  padding: 0.75em;
 `;
 
 const Title = () => (
   <TitleContainer>
-    <Link to="staging">Start</Link>
+    <TitleMenu>
+      <Link to="staging">Start</Link>
+      <Link to="about">About</Link>
+    </TitleMenu>
   </TitleContainer>
 );
 

@@ -64,15 +64,13 @@ const Battle = () => {
   }, [heroes]);
 
   return (
-    <>
-      <BattleContainer>
-        <BattleWindow bgFlash={bgFlash}>
-          <EnemyGroupSection />
-          <MainBattleSection />
-          <PlayerInfoSection />
-        </BattleWindow>
-      </BattleContainer>
-    </>
+    <BattleContainer>
+      <BattleWindow bgFlash={bgFlash}>
+        <EnemyGroupSection />
+        <MainBattleSection />
+        <PlayerInfoSection />
+      </BattleWindow>
+    </BattleContainer>
   );
 };
 
