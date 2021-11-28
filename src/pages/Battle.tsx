@@ -1,13 +1,16 @@
 import { useContext, useRef, useEffect } from 'react';
 
 import { AppStateContext } from '../state';
-import { actionCreators } from '../actions';
+import { actionCreators, thunks } from '../actions';
 import {
   GameStatesEnum,
   LEFT_ENEMY_GROUP,
   NEW_GAME,
-  PLAYER_GROUP,
   RIGHT_ENEMY_GROUP,
+  ATTACK,
+  TECH,
+  ITEM,
+  DEFEND,
 } from '../constants';
 import { generateQueue } from '../utils';
 import Battle from '../components/Battle';
@@ -18,14 +21,10 @@ const {
   startNewRound: startNewRoundAction,
   setQueueIndex,
   incrementQueueIndex,
-  postExecutionThunk,
-  winGame,
-  loseGame,
   setGameState,
   setPlayerInterrupt,
-  attackThunk,
-  newGameThunk,
 } = actionCreators;
+const { postExecutionThunk, attackThunk, newGameThunk } = thunks;
 
 const BattlePage = () => {
   const [state, dispatch] = useContext(AppStateContext);
@@ -38,69 +37,32 @@ const BattlePage = () => {
       prevQueueIndex.current = queueIndex;
 
       if (queue[queueIndex]) {
-        const { actor, target } = queue[queueIndex];
+        const { type, actor, target } = queue[queueIndex];
 
-        // TODO: randomize target selection from target group (only pass target group in queue object, no target index needed)
         const { group: actorGroup, index: actorIndex } = actor;
-        let { group: targetGroup, index: targetIndex } = target;
-
         const actorEntity = groups[actorGroup].entities[actorIndex];
 
+        // TODO: also check status (paralyzed, etc.)
         if (actorEntity.hp <= 0) {
           dispatch(incrementQueueIndex());
           return;
         }
 
-        // TODO: add support for no index passed (target entire group)
-        // TODO: add support for array of groups
+        // TODO
+        let action =
+          type === ATTACK
+            ? attackThunk
+            : type === TECH
+            ? attackThunk
+            : type === ITEM
+            ? attackThunk
+            : type === DEFEND
+            ? attackThunk
+            : undefined;
 
-        if (targetGroup === PLAYER_GROUP) {
-          if (
-            targetIndex !== undefined &&
-            (!groups[PLAYER_GROUP].entities[targetIndex] ||
-              groups[PLAYER_GROUP].entities[targetIndex].hp <= 0)
-          ) {
-            targetIndex = groups[PLAYER_GROUP].entities.findIndex(
-              ({ hp }) => hp > 0
-            );
-
-            if (targetIndex === -1) {
-              dispatch(loseGame());
-              return;
-            }
-          }
-        } else if (
-          targetGroup !== undefined &&
-          targetIndex !== undefined &&
-          (!groups[targetGroup].entities[targetIndex] ||
-            groups[targetGroup].entities[targetIndex].hp <= 0)
-        ) {
-          targetIndex = groups[targetGroup].entities.findIndex(
-            ({ hp }) => hp > 0
-          );
-          if (targetIndex === -1) {
-            targetGroup =
-              targetGroup === LEFT_ENEMY_GROUP
-                ? RIGHT_ENEMY_GROUP
-                : LEFT_ENEMY_GROUP;
-            targetIndex = groups[targetGroup].entities.findIndex(
-              ({ hp }) => hp > 0
-            );
-
-            if (targetIndex === -1) {
-              dispatch(winGame());
-              return;
-            }
-          }
+        if (typeof action === 'function') {
+          dispatch(action(actor, target));
         }
-
-        const newTarget = {
-          group: targetGroup,
-          index: targetIndex,
-        };
-
-        // TODO: use action type to determine what thunk to dispatch
-        dispatch(attackThunk(actor, newTarget));
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
       } else {
