@@ -115,7 +115,7 @@ export const attackThunk =
                   groups[targetGroup].entities.length - 1
                 ].leftPosition.replace('%', '')
               )) /
-              groups[targetGroup].entities.length
+              2
           ) + '%'
         : '50%';
 
