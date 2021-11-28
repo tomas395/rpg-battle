@@ -1,3 +1,5 @@
+export const SET_PIXEL_MULTIPLIER = 'SET_PIXEL_MULTIPLIER';
+
 export const START_NEW_GAME = 'START_NEW_GAME';
 export const START_NEW_ROUND = 'START_NEW_ROUND';
 export const WIN_GAME = 'WIN_GAME';

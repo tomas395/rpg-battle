@@ -1,9 +1,9 @@
 import { useState, useContext } from 'react';
 import styled from 'styled-components';
 
-import { AppStateContext } from '../state';
-import { actionCreators } from '../actions';
-import { generateQueue } from '../utils';
+import { AppStateContext } from '../../state';
+import { actionCreators } from '../../actions';
+import { generateQueue } from '../../utils';
 import {
   INIT,
   PLAYER_INPUT,
@@ -16,8 +16,9 @@ import {
   RIGHT_ENEMY_GROUP,
   NEW_GAME,
   POST_EXECUTION,
-} from '../constants';
-import Window from './Window';
+} from '../../constants';
+import GameMenu from './GameMenu';
+import Window from '../Window';
 import Hero from './Hero';
 
 const {
@@ -29,21 +30,21 @@ const {
 const PlayerInfo = styled.section`
   display: flex;
   justify-content: center;
-  flex: 0 0 170px;
-  height: 170px;
+  flex: 0 0 30%;
+  height: 30%;
 `;
 
 const PlayerMenu = styled(Window)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 1.1px;
+  width: 16%;
   order: 1;
 `;
 
 const PlayerButton = styled.button`
   background-color: red;
-  padding: 10px;
+  padding: 5%;
 `;
 
 const PlayerInfoSection = () => {
@@ -51,6 +52,7 @@ const PlayerInfoSection = () => {
   const { gameState, queueIndex, playerInterrupt, groups } = state;
   // TODO: looking like this will need to be global (need to access it in several places, and be able to reset, etc.)
   const [activeHero, setActiveHero] = useState<number | undefined>();
+  const [gameMenuOpen, setGameMenuOpen] = useState<boolean>(false);
 
   const startNewRound = () => {
     const newQueue = generateQueue([
@@ -146,9 +148,28 @@ const PlayerInfoSection = () => {
             dispatch(setPlayerInterrupt(true));
           }}
         >
-          Interrupt
+          Stop
+        </button>
+        <button
+          onClick={() => {
+            dispatch(setPlayerInterrupt(true));
+            setGameMenuOpen(true);
+          }}
+        >
+          Exit
         </button>
       </PlayerMenu>
+
+      {(gameMenuOpen ||
+        gameState === INIT ||
+        gameState === GAME_WON ||
+        gameState === GAME_LOST) && (
+        <GameMenu
+          handleClose={() => {
+            setGameMenuOpen(false);
+          }}
+        />
+      )}
     </PlayerInfo>
   );
 };

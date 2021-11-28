@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 
-import { SPRITE_MULTIPLIER } from '../constants';
+import { AppStateContext } from '../state';
 
-const Container = styled.div`
+const Container = styled((props) => <div {...props} />)`
   background: #000080;
   color: white;
   position: relative;
-  padding: ${5 * SPRITE_MULTIPLIER}px ${8 * SPRITE_MULTIPLIER}px
-    ${5 * SPRITE_MULTIPLIER}px ${8 * SPRITE_MULTIPLIER}px;
+  padding: ${({ pixelMultiplier }) => 5 * pixelMultiplier}px
+    ${({ pixelMultiplier }) => 8 * pixelMultiplier}px
+    ${({ pixelMultiplier }) => 5 * pixelMultiplier}px
+    ${({ pixelMultiplier }) => 8 * pixelMultiplier}px;
 `;
 
 const Corner = styled.div`
@@ -24,11 +26,11 @@ const Side = styled.div`
   background-repeat: repeat-y;
 `;
 
-const TopBottom = styled.div`
+const TopBottom = styled((props) => <div {...props} />)`
   position: absolute;
-  height: ${3 * SPRITE_MULTIPLIER}px;
+  height: ${({ pixelMultiplier }) => 3 * pixelMultiplier}px;
   width: 100%;
-  background-size: ${5 * SPRITE_MULTIPLIER}px 100%;
+  background-size: ${({ pixelMultiplier }) => 5 * pixelMultiplier}px 100%;
   background-repeat: repeat-x;
 `;
 
@@ -38,16 +40,18 @@ interface WindowProps {
 
 const Window: React.FunctionComponent<WindowProps> = (props) => {
   const { children } = props;
+  const [state] = useContext(AppStateContext);
+  const { pixelMultiplier } = state;
 
   return (
-    <Container {...props}>
+    <Container {...props} pixelMultiplier={pixelMultiplier}>
       {children}
 
       <Side
         style={{
           top: 0,
           left: 0,
-          width: 5 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
           backgroundImage: 'url(./assets/left.png)',
         }}
       />
@@ -55,12 +59,13 @@ const Window: React.FunctionComponent<WindowProps> = (props) => {
         style={{
           top: 0,
           right: 0,
-          width: 5 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
           backgroundImage: 'url(./assets/right.png)',
         }}
       />
       <TopBottom
         style={{ top: 0, left: 0, backgroundImage: 'url(./assets/top.png)' }}
+        pixelMultiplier={pixelMultiplier}
       />
       <TopBottom
         style={{
@@ -68,13 +73,14 @@ const Window: React.FunctionComponent<WindowProps> = (props) => {
           left: 0,
           backgroundImage: 'url(./assets/bottom.png)',
         }}
+        pixelMultiplier={pixelMultiplier}
       />
       <Corner
         style={{
           top: 0,
           left: 0,
-          width: 5 * SPRITE_MULTIPLIER,
-          height: 3 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
+          height: 3 * pixelMultiplier,
           backgroundImage: 'url(./assets/top-left-corner.png)',
         }}
       />
@@ -82,8 +88,8 @@ const Window: React.FunctionComponent<WindowProps> = (props) => {
         style={{
           top: 0,
           right: 0,
-          width: 5 * SPRITE_MULTIPLIER,
-          height: 3 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
+          height: 3 * pixelMultiplier,
           backgroundImage: 'url(./assets/top-right-corner.png)',
         }}
       />
@@ -91,8 +97,8 @@ const Window: React.FunctionComponent<WindowProps> = (props) => {
         style={{
           bottom: 0,
           left: 0,
-          width: 5 * SPRITE_MULTIPLIER,
-          height: 3 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
+          height: 3 * pixelMultiplier,
           backgroundImage: 'url(./assets/bottom-left-corner.png)',
         }}
       />
@@ -100,8 +106,8 @@ const Window: React.FunctionComponent<WindowProps> = (props) => {
         style={{
           bottom: 0,
           right: 0,
-          width: 5 * SPRITE_MULTIPLIER,
-          height: 3 * SPRITE_MULTIPLIER,
+          width: 5 * pixelMultiplier,
+          height: 3 * pixelMultiplier,
           backgroundImage: 'url(./assets/bottom-right-corner.png)',
         }}
       />

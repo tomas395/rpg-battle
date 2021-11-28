@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { EntityTypesEnum } from '../constants';
-import Window from './Window';
+import { EntityTypesEnum } from '../../constants';
+import Window from '../Window';
 
 const EnemyGroupContainer = styled.div`
   width: 35%;

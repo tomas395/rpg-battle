@@ -12,6 +12,7 @@ import {
 
 // TODO: review interface vs. type
 export interface AppStateType {
+  pixelMultiplier: number;
   gameState: GameStatesEnum;
   queue: EntityActionType[];
   queueIndex: number | null;
@@ -62,8 +63,8 @@ export interface EntityGroupType {
 export interface AnimationType {
   frames: number | number[];
   duration: number;
-  top?: number;
-  bottom?: number;
+  top?: number | string;
+  bottom?: number | string;
 }
 
 export interface ItemType {}
