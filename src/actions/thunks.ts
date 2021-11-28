@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { ActionType, TargetType, ActorType } from '../types';
+import { EntityType, ActionType, TargetType, ActorType } from '../types';
 import {
   EXECUTING,
   POST_EXECUTION,
@@ -41,72 +41,56 @@ export const attackThunk =
   async (dispatch: Dispatch<ActionType>, getState: any) => {
     const { groups } = getState();
 
-    // TODO: randomize target selection from target group (only pass target group in queue object, no target index needed)
-
-    /*
-[group]: 
-  pass group array along to action thunk
-    thunk should be set up to accept an array, in which case it targets all entities in each group
-group+index: 
-  if group === PLAYER_GROUP
-    check if entity exists and is alive
-      if not, select random entity from living entities in group
-        if no living entities in PLAYER_GROUP, game lost
-  else
-    check if entity exists and is alive
-      if not, select random entity from living entities in group
-        if no living entities in group
-group: 
-  check to make sure there are living entities in group
-    if not, game won/lost
-  pass group along to action thunk
-    thunk should be set up to accept a target without an index, in which case it will target all entities in group
-*/
-
     const { group: actorGroup, index: actorIndex } = actor;
     const actorEntity = groups[actorGroup].entities[actorIndex];
     let { group: targetGroup, index: targetIndex } = initialTarget;
 
+    // retargeting logic
     if (Array.isArray(targetGroup)) {
-      //
-    } else if (targetGroup === PLAYER_GROUP) {
-      if (
-        targetIndex !== undefined &&
-        (!groups[PLAYER_GROUP].entities[targetIndex] ||
-          groups[PLAYER_GROUP].entities[targetIndex].hp <= 0)
-      ) {
-        targetIndex = groups[PLAYER_GROUP].entities.findIndex(
-          ({ hp }: { hp: number }) => hp > 0
-        );
-
-        if (targetIndex === -1) {
-          dispatch(loseGame());
-          return;
+      targetGroup.filter(
+        (group) =>
+          groups[group].entities.findIndex(
+            ({ hp }: { hp: number }) => hp > 0
+          ) !== -1
+      );
+      // TODO: if no living entities in any target group maybe add some sort of skip flag to check below so we only show actor animation with no other effects
+    } else if (targetIndex === undefined) {
+      if (targetGroup !== PLAYER_GROUP) {
+        if (
+          groups[targetGroup].entities.findIndex(
+            ({ hp }: { hp: number }) => hp > 0
+          ) === -1
+        ) {
+          targetGroup =
+            targetGroup === LEFT_ENEMY_GROUP
+              ? RIGHT_ENEMY_GROUP
+              : LEFT_ENEMY_GROUP;
         }
       }
-    } else if (
-      targetGroup !== undefined &&
-      targetIndex !== undefined &&
-      (!groups[targetGroup].entities[targetIndex] ||
-        groups[targetGroup].entities[targetIndex].hp <= 0)
-    ) {
-      targetIndex = groups[targetGroup].entities.findIndex(
-        ({ hp }: { hp: number }) => hp > 0
+    } else {
+      // TODO: this is hacky, we are checking to see if we have an index, then ignoring it and picking a random one
+      let livingTargetGroupEntities = groups[targetGroup].entities.filter(
+        (entity: EntityType) => entity.hp > 0
       );
-      if (targetIndex === -1) {
+
+      if (
+        actorGroup === PLAYER_GROUP &&
+        livingTargetGroupEntities.length === 0
+      ) {
         targetGroup =
           targetGroup === LEFT_ENEMY_GROUP
             ? RIGHT_ENEMY_GROUP
             : LEFT_ENEMY_GROUP;
-        targetIndex = groups[targetGroup].entities.findIndex(
-          ({ hp }: { hp: number }) => hp > 0
-        );
 
-        if (targetIndex === -1) {
-          dispatch(winGame());
-          return;
-        }
+        livingTargetGroupEntities = groups[targetGroup].entities.filter(
+          (entity: EntityType) => entity.hp > 0
+        );
       }
+
+      targetIndex =
+        livingTargetGroupEntities[
+          Math.floor(Math.random() * livingTargetGroupEntities.length)
+        ].index;
     }
 
     const target = {
@@ -145,7 +129,9 @@ group:
       setEntityAnimation(target, {
         type: TARGETED,
         left:
-          targetGroup === PLAYER_GROUP ? actorEntity.leftPosition : undefined,
+          targetGroup === PLAYER_GROUP && targetIndex !== undefined
+            ? actorEntity.leftPosition
+            : undefined,
       })
     );
     await timeout(ANIMATION_DURATION_MAP[attackAnimationType]);
@@ -180,7 +166,7 @@ group:
         setEntityAnimation(target, {
           type: HURT,
           left:
-            target.group === PLAYER_GROUP
+            target.group === PLAYER_GROUP && targetIndex !== undefined
               ? actorEntity.leftPosition
               : undefined,
         })
