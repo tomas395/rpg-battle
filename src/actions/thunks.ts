@@ -14,6 +14,8 @@ import {
   LEFT_ENEMY_GROUP,
   SLASH,
   ANIMATION_DURATION_MAP,
+  HERO_NAMES,
+  SHOOT,
 } from '../constants';
 import {
   setGameState,
@@ -99,7 +101,8 @@ export const attackThunk =
     };
 
     // TODO: check actor equipped weapon from state to determine which animation to trigger (SLASH vs SHOOT, etc.)
-    const attackAnimationType = SLASH;
+    const attackAnimationType =
+      actorEntity.name === HERO_NAMES[1] ? SHOOT : SLASH;
 
     // TODO: yeaaaa... we need to handle leftPosition percentage another way
     const targetLeftPosition =

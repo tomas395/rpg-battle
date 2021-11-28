@@ -32,7 +32,7 @@ const NewGameMenu = () => {
   const history = useHistory();
   const [, dispatch] = useContext(AppStateContext);
   const [numHeroes, setNumHeroes] = useState(4);
-  const [leftEnemyCount, setLeftEnemyCount] = useState(2);
+  const [leftEnemyCount, setLeftEnemyCount] = useState(3);
   const [rightEnemyCount, setRightEnemyCount] = useState(1);
   const totalEnemyCount = leftEnemyCount + rightEnemyCount;
 

@@ -141,7 +141,10 @@ export const generateHeroes = (count: number) => {
         }%`,
         queuedAction: {
           type: ATTACK,
-          target: { group: LEFT_ENEMY_GROUP, index: 0 },
+          target: {
+            group: LEFT_ENEMY_GROUP,
+            index: index === 1 ? undefined : 0,
+          },
         },
         currentAnimation: { type: IDLE },
         animations: generateEntityAnimations(false),
