@@ -1,9 +1,9 @@
 import { useContext, useRef, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { AppStateContext } from '../state';
 import { actionCreators, thunks } from '../actions';
 import {
-  GameStatesEnum,
   LEFT_ENEMY_GROUP,
   NEW_GAME,
   RIGHT_ENEMY_GROUP,
@@ -11,11 +11,12 @@ import {
   TECH,
   ITEM,
   DEFEND,
+  INIT,
+  PLAYER_INPUT,
+  POST_EXECUTION,
 } from '../constants';
 import { generateQueue } from '../utils';
 import Battle from '../components/Battle';
-
-const { PLAYER_INPUT, POST_EXECUTION } = GameStatesEnum;
 
 const {
   startNewRound: startNewRoundAction,
@@ -27,10 +28,17 @@ const {
 const { postExecutionThunk, attackThunk, newGameThunk } = thunks;
 
 const BattlePage = () => {
+  const history = useHistory();
   const [state, dispatch] = useContext(AppStateContext);
   const { gameState, groups, queue, queueIndex, playerInterrupt } = state;
   const prevQueueIndex = useRef(queueIndex);
   const prevGameState = useRef(gameState);
+
+  useEffect(() => {
+    if (gameState === INIT) {
+      history.push('/');
+    }
+  }, [gameState, history]);
 
   useEffect(() => {
     if (queueIndex !== null && queueIndex !== prevQueueIndex.current) {
