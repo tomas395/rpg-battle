@@ -70,19 +70,23 @@ const PlayerInfoSection = () => {
 
   return (
     <PlayerInfo>
-      {groups[PLAYER_GROUP].entities.map((hero, index) => (
-        <Hero
-          key={hero.name}
-          hero={hero}
-          index={index}
-          active={activeHero === index}
-          handleSelect={
-            gameState === INIT || gameState === PLAYER_INPUT
-              ? handleSelectHero
-              : undefined
-          }
-        />
-      ))}
+      {Array.from(Array(4)).map((el, index) => {
+        const hero = groups[PLAYER_GROUP].entities[index];
+
+        return (
+          <Hero
+            key={hero?.name || `blank-hero-${index}`}
+            hero={hero}
+            index={index}
+            active={activeHero === index}
+            handleSelect={
+              gameState === INIT || gameState === PLAYER_INPUT
+                ? handleSelectHero
+                : undefined
+            }
+          />
+        );
+      })}
 
       {activeHero !== undefined && (
         <Window
