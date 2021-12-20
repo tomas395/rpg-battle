@@ -98,7 +98,6 @@ export interface ActorType {
 }
 
 export interface TargetType {
-  group: GroupsEnum;
-  // | Array<GroupsEnum>;
+  group: GroupsEnum | Array<GroupsEnum>;
   index?: number;
 }

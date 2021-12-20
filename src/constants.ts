@@ -1,7 +1,7 @@
 export const ANIMATION_DURATION_MAP = {
   IDLE: 600,
   SLASH: 600,
-  SHOOT: 600,
+  SHOOT: 1000,
   USE: 1000,
   TARGETED: 600,
   HURT: 1000,

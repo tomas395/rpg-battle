@@ -85,7 +85,7 @@ const generateEntityAnimations = (isEnemy: boolean) => ({
   },
   [SHOOT]: {
     frames: [0, 2, 2],
-    duration: 1,
+    duration: 1000,
     top: isEnemy ? 0 : undefined,
     bottom: isEnemy ? undefined : 0,
   },
@@ -141,7 +141,10 @@ export const generateHeroes = (count: number) => {
         }%`,
         queuedAction: {
           type: ATTACK,
-          target: { group: LEFT_ENEMY_GROUP, index: 0 },
+          target: {
+            group: LEFT_ENEMY_GROUP,
+            index: index === 1 ? undefined : 0,
+          },
         },
         currentAnimation: { type: IDLE },
         animations: generateEntityAnimations(false),
