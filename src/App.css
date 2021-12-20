@@ -1,10 +1,10 @@
 @font-face {
-  font-family: 'PixelEmulator';
-  src: url('./fonts/PixelEmulator.eot') format('embedded-opentype'),
-    url('./fonts/PixelEmulator.woff2') format('woff2'),
-    url('./fonts/PixelEmulator.woff') format('woff'),
-    url('./fonts/PixelEmulator.ttf') format('truetype'),
-    url('./fonts/PixelEmulator.svg') format('svg');
+  font-family: 'PS2';
+  src: url('./fonts/ps2-webfont.eot') format('embedded-opentype'),
+    url('./fonts/ps2-webfont.woff2') format('woff2'),
+    url('./fonts/ps2-webfont.woff') format('woff'),
+    url('./fonts/ps2-webfont.ttf') format('truetype'),
+    url('./fonts/ps2-webfont.svg') format('svg');
 }
 
 * {
@@ -17,7 +17,7 @@ body {
   background-color: #000022;
   font-size: 1.4rem;
   color: white;
-  font-family: 'PixelEmulator', sans-serif;
+  font-family: 'PS2', sans-serif;
   -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: none;
 }
