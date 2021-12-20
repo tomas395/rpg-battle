@@ -46,8 +46,8 @@ const Hero = ({ hero, index, active, handleSelect }: HeroProps) => {
             height: '100%',
           }}
         >
-          <div>HP: {hp <= 0 ? '✞' : hp}</div>
-          <div>TP: {tp}</div>
+          <div>HP {hp <= 0 ? '✞' : hp}</div>
+          <div>TP {tp}</div>
           <div>{name}</div>
           {active ? '*' : ''}
           {Boolean(queuedAction) && queuedAction.type}
