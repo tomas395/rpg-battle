@@ -30,8 +30,8 @@ const {
 const PlayerInfo = styled.section`
   display: flex;
   justify-content: center;
-  flex: 0 0 30%;
-  height: 30%;
+  flex: 0 0 22%;
+  height: 22%;
 `;
 
 const PlayerMenu = styled(Window)`

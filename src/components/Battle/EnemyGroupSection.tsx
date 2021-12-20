@@ -6,7 +6,7 @@ import { AppStateContext } from '../../state';
 import { LEFT_ENEMY_GROUP, RIGHT_ENEMY_GROUP } from '../../constants';
 
 const EnemySection = styled.section`
-  flex: 0 1 30%;
+  flex: 0 1 25%;
   height: 100%;
   display: flex;
   top: 0;

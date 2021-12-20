@@ -39,103 +39,109 @@ const MainBattleSection = () => {
 
   return (
     <BattleSection>
-      {combinedEnemies.map(
-        ({
-          id,
-          type, // TODO: consider renaming this to entityType
-          status,
-          leftPosition,
-          currentAnimation,
-          animations,
-        }) => {
-          const animationType = currentAnimation.type;
+      <div style={{ position: 'relative', width: '100%', height: '55%' }}>
+        {combinedEnemies.map(
+          ({
+            id,
+            type, // TODO: consider renaming this to entityType
+            status,
+            leftPosition,
+            currentAnimation,
+            animations,
+          }) => {
+            const animationType = currentAnimation.type;
 
-          const { frames = 0, duration = 0 } = animationType
-            ? animations[animationType]
-            : {};
+            const { frames = 0, duration = 0 } = animationType
+              ? animations[animationType]
+              : {};
 
-          return (
-            <Dissolve
-              key={id}
-              dissolving={gameState === NEW_GAME}
-              reverse
-              width={64}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: leftPosition,
-                height: 64 * pixelMultiplier,
-                width: 64 * pixelMultiplier,
-                transform: `translateX(-50%)`,
-              }}
-            >
-              <AnimatedSprite
-                height={64}
+            return (
+              <Dissolve
+                key={id}
+                dissolving={gameState === NEW_GAME}
+                reverse
                 width={64}
-                spriteImg={type ? String(type).toLowerCase() : 'froggy'}
-                frames={frames}
-                duration={duration}
                 style={{
-                  visibility: status === DEAD ? 'hidden' : undefined,
-                  height: '100%',
-                  width: '100%',
+                  position: 'absolute',
+                  bottom: 0,
+                  left: leftPosition,
+                  height: 64 * pixelMultiplier,
+                  width: 64 * pixelMultiplier,
+                  transform: `translateX(-50%)`,
                 }}
-              />
-            </Dissolve>
-          );
-        }
-      )}
+              >
+                <AnimatedSprite
+                  height={64}
+                  width={64}
+                  spriteImg={type ? String(type).toLowerCase() : 'froggy'}
+                  frames={frames}
+                  duration={duration}
+                  style={{
+                    visibility: status === DEAD ? 'hidden' : undefined,
+                    height: '100%',
+                    width: '100%',
+                  }}
+                />
+              </Dissolve>
+            );
+          }
+        )}
+      </div>
 
-      {groups[PLAYER_GROUP].entities.map(
-        (
-          { id, name, status, leftPosition, currentAnimation, animations },
-          index
-        ) => {
-          const animationType = currentAnimation.type;
-          const left = currentAnimation.left;
+      <div>
+        {groups[PLAYER_GROUP].entities.map(
+          (
+            { id, name, status, leftPosition, currentAnimation, animations },
+            index
+          ) => {
+            const animationType = currentAnimation.type;
+            const left = currentAnimation.left;
 
-          const {
-            frames = 0,
-            duration = 0,
-            top = undefined,
-            bottom = undefined,
-          } = animationType ? animations[animationType] : {};
+            const {
+              frames = 0,
+              duration = 0,
+              top = undefined,
+              bottom = undefined,
+            } = animationType ? animations[animationType] : {};
 
-          return (
-            <div
-              key={id}
-              style={{
-                position: 'absolute',
-                top: top,
-                bottom: `${bottom || (index === 2 || index === 3 ? -24 : 0)}px`,
-                left: left || leftPosition,
-                height: 64 * pixelMultiplier,
-                width: 64 * pixelMultiplier,
-                transform: `translateX(-50%)`,
-              }}
-            >
-              <AnimatedSprite
-                height={64}
-                width={64}
-                spriteImg={name.toLowerCase()}
-                frames={frames}
-                duration={duration}
+            return (
+              <div
+                key={id}
                 style={{
-                  visibility:
-                    status === DEAD ||
-                    (gameState !== NEW_GAME &&
-                      gameState !== PLAYER_INPUT &&
-                      animationType === IDLE)
-                      ? 'hidden'
-                      : undefined,
-                  height: '100%',
-                  width: '100%',
+                  position: 'absolute',
+                  top: top,
+                  bottom: `${
+                    bottom || (index === 2 || index === 3 ? -24 : 0)
+                  }px`,
+                  left: left || leftPosition,
+                  height: 64 * pixelMultiplier,
+                  width: 64 * pixelMultiplier,
+                  transform: `translateX(-50%)`,
                 }}
-              />
-            </div>
-          );
-        }
-      )}
+              >
+                <AnimatedSprite
+                  height={64}
+                  width={64}
+                  spriteImg={name.toLowerCase()}
+                  frames={frames}
+                  duration={duration}
+                  style={{
+                    visibility:
+                      status === DEAD ||
+                      (gameState !== NEW_GAME &&
+                        gameState !== PLAYER_INPUT &&
+                        animationType === IDLE)
+                        ? 'hidden'
+                        : undefined,
+                    height: '100%',
+                    width: '100%',
+                  }}
+                />
+              </div>
+            );
+          }
+        )}
+      </div>
 
       {Boolean(groups[PLAYER_GROUP].message) && (
         <MessageBox>{groups[PLAYER_GROUP].message}</MessageBox>
