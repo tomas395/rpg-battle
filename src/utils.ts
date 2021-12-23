@@ -36,6 +36,7 @@ export const generateEntity = ({
   defense,
   speed,
   inventory,
+  techniques,
   leftPosition,
   queuedAction,
   currentAnimation,
@@ -55,6 +56,7 @@ export const generateEntity = ({
   defense,
   speed,
   inventory,
+  techniques,
   leftPosition,
   queuedAction,
   currentAnimation,
@@ -135,7 +137,8 @@ export const generateHeroes = (count: number) => {
         attack: 1,
         defense: 3,
         speed: 2,
-        inventory: [],
+        inventory: [{ name: 'Item 1' }, { name: 'Item 2' }, { name: 'Item 3' }],
+        techniques: [{ name: 'Tech 1' }, { name: 'Tech 2' }],
         leftPosition: `${
           index === 0 ? 40 : index === 1 ? 60 : index === 2 ? 20 : 80
         }%`,
@@ -183,6 +186,7 @@ export const generateEnemies = (
         defense: 3,
         speed: type === FROGGY ? 1 : 3,
         inventory: [],
+        techniques: [],
         leftPosition: `${
           (group === RIGHT_ENEMY_GROUP ? realIndex + 1 : realIndex + 1) *
           (100 / (totalGroupSize + 1))

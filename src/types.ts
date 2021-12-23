@@ -39,6 +39,7 @@ export interface EntityType {
   defense: number;
   speed: number;
   inventory: ItemType[];
+  techniques: TechniqueType[];
   // equipment: EntityEquipmentType;
   leftPosition: number | string;
   queuedAction: {
@@ -67,7 +68,13 @@ export interface AnimationType {
   bottom?: number | string;
 }
 
-export interface ItemType {}
+export interface ItemType {
+  name: string;
+}
+
+export interface TechniqueType {
+  name: string;
+}
 
 export interface EntityEquipmentType {
   // head: EquippableItemType | null;
