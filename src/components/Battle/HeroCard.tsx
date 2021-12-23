@@ -43,11 +43,35 @@ const HeroCard = ({ hero, index, handleSelect }: HeroCardProps) => {
             }
           }}
         >
-          <div style={{ width: '100%', textAlign: 'left' }}>
-            HP <span style={{ float: 'right' }}>{hp <= 0 ? '✞' : hp}</span>
-          </div>
-          <div style={{ width: '100%', textAlign: 'left' }}>
-            TP <span style={{ float: 'right' }}>{tp}</span>
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div>
+              {hp <= 0 ? (
+                <Sprite
+                  src={`./assets/gravestone.png`}
+                  width={16}
+                  height={16}
+                  alt="grave icon"
+                />
+              ) : (
+                <>
+                  HP
+                  <br />
+                  TP
+                </>
+              )}
+            </div>
+            <div>
+              {hp}
+              <br />
+              {tp}
+            </div>
           </div>
           <div>
             <Sprite
