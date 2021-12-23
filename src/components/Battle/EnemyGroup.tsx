@@ -16,7 +16,7 @@ const EnemyMessage = styled(Window)`
   width: 150px;
 `;
 
-const EnemyName = styled(Window)`
+const EnemyGroupName = styled(Window)`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,7 +33,7 @@ const EnemyGroup = (props: EnemyGroupProps) => {
 
   return (
     <EnemyGroupContainer>
-      <EnemyName>{type}</EnemyName>
+      <EnemyGroupName>{type}</EnemyGroupName>
       <EnemyMessage>{message}</EnemyMessage>
     </EnemyGroupContainer>
   );

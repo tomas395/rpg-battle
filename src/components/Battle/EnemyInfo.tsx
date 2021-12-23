@@ -5,14 +5,14 @@ import EnemyGroup from './EnemyGroup';
 import { AppStateContext } from '../../state';
 import { LEFT_ENEMY_GROUP, RIGHT_ENEMY_GROUP } from '../../constants';
 
-const EnemySection = styled.section`
+const EnemyInfoContainer = styled.section`
   flex: 0 1 20%;
   display: flex;
   top: 0;
   justify-content: space-between;
 `;
 
-const EnemyGroupSection = () => {
+const EnemyInfo = () => {
   const [state] = useContext(AppStateContext);
   const {
     groups: {
@@ -22,14 +22,14 @@ const EnemyGroupSection = () => {
   } = state;
 
   return (
-    <EnemySection>
+    <EnemyInfoContainer>
       <EnemyGroup type={leftEnemyGroup.type} message={leftEnemyGroup.message} />
       <EnemyGroup
         type={rightEnemyGroup.type}
         message={rightEnemyGroup.message}
       />
-    </EnemySection>
+    </EnemyInfoContainer>
   );
 };
 
-export default EnemyGroupSection;
+export default EnemyInfo;

@@ -10,7 +10,6 @@ import {
   EXECUTING,
   GAME_WON,
   GAME_LOST,
-  ATTACK,
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
@@ -18,23 +17,22 @@ import {
   POST_EXECUTION,
 } from '../../constants';
 import GameMenu from './GameMenu';
+import HeroMenu from './HeroMenu';
 import Window from '../Window';
-import Hero from './Hero';
+import HeroCard from './HeroCard';
 
-const {
-  startNewRound: startNewRoundAction,
-  setPlayerInterrupt,
-  queueAction,
-} = actionCreators;
+const { startNewRound: startNewRoundAction, setPlayerInterrupt } =
+  actionCreators;
 
-const PlayerInfo = styled.section`
+const HeroInfoContainer = styled.section`
+  position: relative;
   display: flex;
   justify-content: center;
   flex: 0 0 22%;
   height: 22%;
 `;
 
-const PlayerMenu = styled(Window)`
+const PlayerButtons = styled(Window)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,11 +45,11 @@ const PlayerButton = styled.button`
   padding: 5%;
 `;
 
-const PlayerInfoSection = () => {
+const PlayerInfo = () => {
   const [state, dispatch] = useContext(AppStateContext);
   const { gameState, queueIndex, playerInterrupt, groups } = state;
   // TODO: looking like this will need to be global (need to access it in several places, and be able to reset, etc.)
-  const [activeHero, setActiveHero] = useState<number | undefined>();
+  const [activeHeroIndex, setActiveHeroIndex] = useState<number | undefined>();
   const [gameMenuOpen, setGameMenuOpen] = useState<boolean>(false);
 
   const startNewRound = () => {
@@ -65,20 +63,19 @@ const PlayerInfoSection = () => {
   };
 
   const handleSelectHero = (index: number | undefined) => {
-    setActiveHero(index);
+    setActiveHeroIndex(activeHeroIndex === index ? undefined : index);
   };
 
   return (
-    <PlayerInfo>
+    <HeroInfoContainer>
       {Array.from(Array(4)).map((el, index) => {
         const hero = groups[PLAYER_GROUP].entities[index];
 
         return (
-          <Hero
+          <HeroCard
             key={hero?.name || `blank-hero-${index}`}
             hero={hero}
             index={index}
-            active={activeHero === index}
             handleSelect={
               gameState === INIT || gameState === PLAYER_INPUT
                 ? handleSelectHero
@@ -88,50 +85,20 @@ const PlayerInfoSection = () => {
         );
       })}
 
-      {activeHero !== undefined && (
-        <Window
-          style={{
-            position: 'absolute',
-            bottom: 230,
-            left: '50%',
-            transform: 'translateX(-50%)',
+      {activeHeroIndex !== undefined && (
+        <HeroMenu
+          activeHero={groups[PLAYER_GROUP].entities[activeHeroIndex]}
+          handleClose={() => {
+            setActiveHeroIndex(undefined);
           }}
-        >
-          <button
-            onClick={() => {
-              dispatch(
-                queueAction({
-                  heroIndex: activeHero,
-                  target: { group: LEFT_ENEMY_GROUP, index: 0 },
-                  type: ATTACK,
-                })
-              );
-              setActiveHero(undefined);
-            }}
-          >
-            Left Enemy Group
-          </button>
-          <button
-            onClick={() => {
-              dispatch(
-                queueAction({
-                  heroIndex: activeHero,
-                  target: { group: RIGHT_ENEMY_GROUP, index: 0 },
-                  type: ATTACK,
-                })
-              );
-              setActiveHero(undefined);
-            }}
-          >
-            Right Enemy Group
-          </button>
-        </Window>
+        />
       )}
 
-      <PlayerMenu>
+      <PlayerButtons>
         <div>ATTK</div>
         <PlayerButton
           disabled={
+            activeHeroIndex !== undefined ||
             queueIndex !== null ||
             gameState === INIT ||
             gameState === NEW_GAME ||
@@ -162,7 +129,7 @@ const PlayerInfoSection = () => {
         >
           Exit
         </button>
-      </PlayerMenu>
+      </PlayerButtons>
 
       {(gameMenuOpen ||
         gameState === INIT ||
@@ -174,8 +141,8 @@ const PlayerInfoSection = () => {
           }}
         />
       )}
-    </PlayerInfo>
+    </HeroInfoContainer>
   );
 };
 
-export default PlayerInfoSection;
+export default PlayerInfo;

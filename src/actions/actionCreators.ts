@@ -15,7 +15,12 @@ import {
   SET_ENTITY_STATUS,
   ENTITY_DAMAGE,
 } from './actionTypes';
-import { TargetType, EntityActionType } from '../types';
+import {
+  TargetType,
+  EntityActionType,
+  ItemType,
+  TechniqueType,
+} from '../types';
 import {
   EntityActionTypesEnum,
   AnimationTypesEnum,
@@ -70,16 +75,22 @@ export const queueAction = ({
   heroIndex,
   target,
   type,
+  item,
+  tech,
 }: {
   heroIndex: number;
-  target: TargetType;
+  target?: TargetType;
   type: EntityActionTypesEnum;
+  item?: ItemType;
+  tech?: TechniqueType;
 }) => ({
   type: QUEUE_ACTION,
   payload: {
     heroIndex,
     target,
     type,
+    item,
+    tech,
   },
 });
 
