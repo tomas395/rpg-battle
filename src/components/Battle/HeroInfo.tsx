@@ -20,6 +20,7 @@ import GameMenu from './GameMenu';
 import HeroMenu from './HeroMenu';
 import Window from '../Window';
 import HeroCard from './HeroCard';
+import AnimatedSprite from '../AnimatedSprite';
 
 const { startNewRound: startNewRoundAction, setPlayerInterrupt } =
   actionCreators;
@@ -41,14 +42,17 @@ const PlayerButtons = styled(Window)`
 `;
 
 const PlayerButton = styled.button`
-  background-color: red;
-  padding: 5%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: white;
 `;
 
 const PlayerInfo = () => {
   const [state, dispatch] = useContext(AppStateContext);
-  const { gameState, queueIndex, playerInterrupt, groups } = state;
-  // TODO: looking like this will need to be global (need to access it in several places, and be able to reset, etc.)
+  const { gameState, queueIndex, playerInterrupt, groups, pixelMultiplier } =
+    state;
   const [activeHeroIndex, setActiveHeroIndex] = useState<number | undefined>();
   const [gameMenuOpen, setGameMenuOpen] = useState<boolean>(false);
 
@@ -95,7 +99,6 @@ const PlayerInfo = () => {
       )}
 
       <PlayerButtons>
-        <div>FGHT</div>
         <PlayerButton
           disabled={
             activeHeroIndex !== undefined ||
@@ -106,8 +109,34 @@ const PlayerInfo = () => {
             gameState === GAME_LOST
           }
           onClick={startNewRound}
-        />
-        <div>STGY</div>
+        >
+          <div
+            style={{
+              height: 8 * pixelMultiplier,
+              width: 14 * pixelMultiplier,
+              margin: '0 auto',
+            }}
+          >
+            <AnimatedSprite
+              height={8}
+              width={14}
+              spriteImg={'button-light'}
+              frames={
+                activeHeroIndex !== undefined ||
+                queueIndex !== null ||
+                gameState === GAME_WON ||
+                gameState === GAME_LOST
+                  ? [1]
+                  : [0]
+              }
+              style={{
+                height: '100%',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div>FGHT</div>
+        </PlayerButton>
         <PlayerButton
           disabled={
             playerInterrupt ||
@@ -117,7 +146,33 @@ const PlayerInfo = () => {
           onClick={() => {
             dispatch(setPlayerInterrupt(true));
           }}
-        />
+        >
+          <div
+            style={{
+              height: 8 * pixelMultiplier,
+              width: 14 * pixelMultiplier,
+              margin: '0 auto',
+            }}
+          >
+            <AnimatedSprite
+              height={8}
+              width={14}
+              spriteImg={'button-light'}
+              frames={
+                playerInterrupt ||
+                queueIndex === null ||
+                (gameState !== EXECUTING && gameState !== POST_EXECUTION)
+                  ? [1]
+                  : [0]
+              }
+              style={{
+                height: '100%',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div>STGY</div>
+        </PlayerButton>
         <button
           onClick={() => {
             dispatch(setPlayerInterrupt(true));
