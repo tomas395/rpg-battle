@@ -8,9 +8,12 @@ import {
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
+  TargetTypesEnum,
+  EffectTypesEnum,
+  ArmorTypesEnum,
+  HeroesEnum,
 } from './constants';
 
-// TODO: review interface vs. type
 export interface AppStateType {
   pixelMultiplier: number;
   gameState: GameStatesEnum;
@@ -39,8 +42,14 @@ export interface EntityType {
   defense: number;
   speed: number;
   inventory: ItemType[];
+  equipment: {
+    leftHand?: WeaponType | ShieldType;
+    rightHand?: WeaponType | ShieldType;
+    head?: ArmorType;
+    body?: ArmorType;
+    legs?: ArmorType;
+  };
   techniques: TechniqueType[];
-  // equipment: EntityEquipmentType;
   leftPosition: number | string;
   queuedAction: {
     type: EntityActionTypesEnum;
@@ -55,9 +64,13 @@ export interface EntityType {
   };
 }
 
+export interface EnemyType extends EntityType {
+  size: number;
+}
+
 export interface EntityGroupType {
   type?: EntityTypesEnum;
-  entities: EntityType[];
+  entities: Array<EntityType | EnemyType>;
   message: string;
 }
 
@@ -70,22 +83,40 @@ export interface AnimationType {
 
 export interface ItemType {
   name: string;
+  consumable?: boolean;
+  itemTargetType?: TargetTypesEnum;
+  itemTargetAllies?: boolean;
+  itemEffect?: EffectTypesEnum;
+  itemPower?: number;
+}
+
+export interface WeaponType extends ItemType {
+  attackPower: number;
+  defensePower: number;
+  attackType: 'SLASH' | 'SHOOT'; // TODO
+  twoHanded?: boolean;
+  targetType: TargetTypesEnum;
+  equippableBy: HeroesEnum[];
+}
+
+export interface ShieldType extends ItemType {
+  defensePower: number;
+  equippableBy: HeroesEnum[];
+}
+
+export interface ArmorType extends ItemType {
+  defensePower: number;
+  type: ArmorTypesEnum;
+  equippableBy: HeroesEnum[];
 }
 
 export interface TechniqueType {
   name: string;
-}
-
-export interface EntityEquipmentType {
-  // head: EquippableItemType | null;
-  // leftHand: EquippableItemType | null;
-  // rightHand: EquippableItemType | null;
-  // body: EquippableItemType | null;
-  // legs: EquippableItemType | null;
-}
-
-export interface EquippableItemType {
-  twoHanded: boolean;
+  targetType: TargetTypesEnum;
+  targetAllies: boolean;
+  effect: EffectTypesEnum;
+  power: number;
+  tp: number;
 }
 
 export interface ActionType {
