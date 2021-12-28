@@ -1,4 +1,4 @@
-import { ROLF, RUDO, NEI, AMY, PLAYER_GROUP, HUMAN, NUMAN } from '../constants';
+import { ROLF, RUDO, NEI, AMY, HUMAN, NUMAN } from '../constants';
 import { generateEntityAnimations } from '../utils';
 import ITEMS from './items';
 import WEAPONS from './weapons';
@@ -14,12 +14,7 @@ const { RES, FOI } = TECHNIQUES;
 
 const HERO_DATA = {
   [ROLF]: {
-    // id: uuid(),
-    // index: 0, // TODO
-    // leftPosition: '40%', // TODO
-    group: PLAYER_GROUP,
     type: HUMAN,
-    // status: OK,
     name: ROLF,
     maxHp: 10,
     hp: 10,
@@ -35,23 +30,10 @@ const HERO_DATA = {
       head: HEADGEAR,
     },
     techniques: [RES, FOI],
-    // queuedAction: {
-    //   type: ATTACK,
-    //   target: {
-    //     group: LEFT_ENEMY_GROUP,
-    //     index: 0,
-    //   },
-    // },
-    // currentAnimation: { type: IDLE },
     animations: generateEntityAnimations(false),
   },
   [RUDO]: {
-    // id: uuid(),
-    // index: 1, // TODO
-    // leftPosition: '60%', // TODO
-    group: PLAYER_GROUP,
     type: HUMAN,
-    // status: OK,
     name: RUDO,
     maxHp: 10,
     hp: 10,
@@ -66,23 +48,10 @@ const HERO_DATA = {
       rightHand: SHOTGUN,
     },
     techniques: [],
-    // queuedAction: {
-    //   type: ATTACK,
-    //   target: {
-    //     group: LEFT_ENEMY_GROUP,
-    //     index: 0,
-    //   },
-    // },
-    // currentAnimation: { type: IDLE },
     animations: generateEntityAnimations(false),
   },
   [NEI]: {
-    // id: uuid(),
-    // index: 2, // TODO
-    // leftPosition: '20%', // TODO
-    group: PLAYER_GROUP,
     type: NUMAN,
-    // status: OK,
     name: NEI,
     maxHp: 10,
     hp: 10,
@@ -98,23 +67,10 @@ const HERO_DATA = {
       head: RIBBON,
     },
     techniques: [RES],
-    // queuedAction: {
-    //   type: ATTACK,
-    //   target: {
-    //     group: LEFT_ENEMY_GROUP,
-    //     index: 0,
-    //   },
-    // },
-    // currentAnimation: { type: IDLE },
     animations: generateEntityAnimations(false),
   },
   [AMY]: {
-    // id: uuid(),
-    // index: 3, // TODO
-    // leftPosition: '80%', // TODO
-    group: PLAYER_GROUP,
     type: HUMAN,
-    // status: OK,
     name: AMY,
     maxHp: 10,
     hp: 10,
@@ -130,14 +86,6 @@ const HERO_DATA = {
       head: HEADGEAR,
     },
     techniques: [RES],
-    // queuedAction: {
-    //   type: ATTACK,
-    //   target: {
-    //     group: LEFT_ENEMY_GROUP,
-    //     index: 0,
-    //   },
-    // },
-    // currentAnimation: { type: IDLE },
     animations: generateEntityAnimations(false),
   },
 };

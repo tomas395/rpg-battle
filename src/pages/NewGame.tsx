@@ -75,10 +75,11 @@ const NewGameMenu = () => {
             ...HEROES[heroName],
             id: uuid(),
             index,
+            status: OK,
+            group: PLAYER_GROUP,
             leftPosition: `${
               index === 0 ? 40 : index === 1 ? 60 : index === 2 ? 20 : 80
             }%`,
-            status: OK,
             queuedAction: {
               type: ATTACK,
               target: {
@@ -98,11 +99,11 @@ const NewGameMenu = () => {
                   ...ENEMIES[leftEnemyType],
                   id: uuid(),
                   index,
+                  group: LEFT_ENEMY_GROUP,
+                  status: OK,
                   leftPosition: `${
                     (index + 1) * (100 / (leftSlots + rightSlots + 1))
                   }%`,
-                  group: LEFT_ENEMY_GROUP,
-                  status: OK,
                   queuedAction: {
                     type: ATTACK,
                     target: {
@@ -123,12 +124,12 @@ const NewGameMenu = () => {
                   ...ENEMIES[rightEnemyType],
                   id: uuid(),
                   index,
+                  group: RIGHT_ENEMY_GROUP,
+                  status: OK,
                   leftPosition: `${
                     (leftEnemyCount + index + 1) *
                     (100 / (leftSlots + rightSlots + 1))
                   }%`,
-                  group: RIGHT_ENEMY_GROUP,
-                  status: OK,
                   queuedAction: {
                     type: ATTACK,
                     target: {
