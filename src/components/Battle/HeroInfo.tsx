@@ -122,7 +122,6 @@ const PlayerInfo = () => {
               width={14}
               spriteImg={'button-light'}
               frames={
-                activeHeroIndex !== undefined ||
                 queueIndex !== null ||
                 gameState === GAME_WON ||
                 gameState === GAME_LOST

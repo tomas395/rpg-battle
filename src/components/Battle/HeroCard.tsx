@@ -68,7 +68,7 @@ const HeroCard = ({ hero, index, handleSelect }: HeroCardProps) => {
               )}
             </div>
             <div>
-              {hp}
+              {hp > 0 ? hp : 0}
               <br />
               {tp}
             </div>

@@ -165,7 +165,6 @@ const NewGameMenu = () => {
       <select
         onClick={({ target: { value } }: any) => {
           // TODO: ts
-          console.log(value);
           const newHeroes = [...heroes];
           newHeroes.push(value as HeroesEnum);
           setHeroes(newHeroes);
@@ -182,8 +181,6 @@ const NewGameMenu = () => {
       <select
         onClick={({ target: { value } }: any) => {
           // TODO: ts
-          console.log(value);
-          console.log(heroes.indexOf(value as HeroesEnum));
           const newHeroes = [...heroes];
           newHeroes.splice(heroes.indexOf(value as HeroesEnum), 1);
           setHeroes(newHeroes);
