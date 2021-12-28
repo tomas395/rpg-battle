@@ -196,6 +196,7 @@ const NewGameMenu = () => {
       --------------
       <h4>Enemies: </h4>
       <select
+        value={leftEnemyType}
         onChange={({ target: { value } }: ChangeEvent<HTMLSelectElement>) =>
           setLeftEnemyType(
             value === 'None' ? undefined : (value as EnemyTypesEnum)
@@ -229,6 +230,7 @@ const NewGameMenu = () => {
       />
       <br />
       <select
+        value={rightEnemyType}
         onChange={({ target: { value } }: ChangeEvent<HTMLSelectElement>) =>
           setRightEnemyType(
             value === 'None' ? undefined : (value as EnemyTypesEnum)

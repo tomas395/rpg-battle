@@ -18,7 +18,6 @@ const {
   INCREMENT_QUEUE_INDEX,
   SET_GAME_STATE,
   SET_PLAYER_INTERRUPT,
-  // SET_ACTIVE_HERO,
   QUEUE_ACTION,
   SET_GROUP_MESSAGE,
   SET_ENTITY_STATUS,
@@ -313,20 +312,16 @@ const reducer = (state: AppStateType, action: ActionType) => {
         groups: newGroups,
       };
     }
-    // case SET_ACTIVE_HERO: {
-    //   return {
-    //     ...state,
-    //     activeHero: payload,
-    //   };
-    // }
     case QUEUE_ACTION: {
-      const { heroIndex: index, target, type } = payload;
+      const { heroIndex: index, target, type, techIndex, itemIndex } = payload;
 
       const newEntity = {
         ...state.groups[PLAYER_GROUP].entities[index],
         queuedAction: {
           type,
           target,
+          techIndex,
+          itemIndex,
         },
       };
       const newGroupEntities = [

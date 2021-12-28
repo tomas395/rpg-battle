@@ -8,19 +8,13 @@ import {
   INCREMENT_QUEUE_INDEX,
   SET_GAME_STATE,
   SET_PLAYER_INTERRUPT,
-  SET_ACTIVE_HERO,
   QUEUE_ACTION,
   SET_GROUP_MESSAGE,
   SET_ENTITY_ANIMATION,
   SET_ENTITY_STATUS,
   ENTITY_DAMAGE,
 } from './actionTypes';
-import {
-  TargetType,
-  EntityActionType,
-  ItemType,
-  TechniqueType,
-} from '../types';
+import { TargetType, EntityActionType } from '../types';
 import {
   EntityActionTypesEnum,
   AnimationTypesEnum,
@@ -66,31 +60,26 @@ export const setPlayerInterrupt = (interrupt: boolean) => ({
   payload: interrupt,
 });
 
-export const setActiveHero = (activeIndex: number) => ({
-  type: SET_ACTIVE_HERO,
-  payload: activeIndex,
-});
-
 export const queueAction = ({
   heroIndex,
   target,
   type,
-  item,
-  tech,
+  techIndex,
+  itemIndex,
 }: {
   heroIndex: number;
   target?: TargetType;
   type: EntityActionTypesEnum;
-  item?: ItemType;
-  tech?: TechniqueType;
+  techIndex?: number;
+  itemIndex?: number;
 }) => ({
   type: QUEUE_ACTION,
   payload: {
     heroIndex,
     target,
     type,
-    item,
-    tech,
+    techIndex,
+    itemIndex,
   },
 });
 

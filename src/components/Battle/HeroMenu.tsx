@@ -12,6 +12,10 @@ import {
   DEFEND,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
+  ENTITY,
+  GROUP,
+  PLAYER_GROUP,
+  ALL,
 } from '../../constants';
 import Window from '../Window';
 import Sprite from '../Sprite';
@@ -39,6 +43,7 @@ const ActionMenu = styled(Window)`
   padding-top: 1em;
 `;
 const Button = styled((props) => <button {...props} />)`
+  width: 100%;
   padding: 0;
   border: none;
   outline: none;
@@ -79,25 +84,27 @@ const Menu = styled.ul`
   list-style-type: none;
   margin: 0;
   padding: 0;
-  text-align: left;
 `;
 const MenuItem = styled((props) => <li {...props} />)`
   margin: 0 0 0.75em;
 
-  &:before {
-    content: '';
-    display: inline-block;
-    width: ${({ pixelMultiplier }: any) => `${14 * pixelMultiplier}px`};
-    height: ${({ pixelMultiplier }: any) => `${8 * pixelMultiplier}px`};
-    margin-right: 0.25em;
-    margin-bottom: 0.1em;
-    background: orange;
-    background: url('./assets/button-light.png');
-    background-size: ${({ pixelMultiplier }: any) =>
-      `auto ${8 * pixelMultiplier}px`};
-    background-repeat: no-repeat;
-    background-position: ${({ active, pixelMultiplier }: any) =>
-      `${active ? -14 * pixelMultiplier : 0}px`}
+  & button {
+    text-align: left;
+    &:before {
+      content: '';
+      display: inline-block;
+      width: ${({ pixelMultiplier }: any) => `${14 * pixelMultiplier}px`};
+      height: ${({ pixelMultiplier }: any) => `${8 * pixelMultiplier}px`};
+      margin-right: 0.25em;
+      margin-bottom: 0.1em;
+      background: orange;
+      background: url('./assets/button-light.png');
+      background-size: ${({ pixelMultiplier }: any) =>
+        `auto ${8 * pixelMultiplier}px`};
+      background-repeat: no-repeat;
+      background-position: ${({ active, pixelMultiplier }: any) =>
+        `${active ? -14 * pixelMultiplier : 0}px`};
+  }
 `;
 
 interface HeroMenuProps {
@@ -109,6 +116,7 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
   const [state, dispatch] = useContext(AppStateContext);
   const {
     groups: {
+      [PLAYER_GROUP]: playerGroup,
       [LEFT_ENEMY_GROUP]: leftEnemyGroup,
       [RIGHT_ENEMY_GROUP]: rightEnemyGroup,
     },
@@ -120,7 +128,40 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
   const [itemIndex, setItemIndex] = useState<number | undefined>();
   const [techIndex, setTechIndex] = useState<number | undefined>();
 
-  const { name, index: activeHeroIndex, inventory, techniques } = activeHero;
+  const {
+    name,
+    index: activeHeroIndex,
+    equipment: { leftHand, rightHand },
+    inventory,
+    techniques,
+  } = activeHero;
+  const attackTargetType =
+    leftHand && 'twoHanded' in leftHand && leftHand.twoHanded
+      ? leftHand.targetType
+      : leftHand && 'targetType' in leftHand
+      ? leftHand.targetType
+      : rightHand && 'targetType' in rightHand
+      ? rightHand.targetType
+      : undefined;
+  const activeTech =
+    techIndex !== undefined ? techniques[techIndex] : undefined;
+  const activeItem = itemIndex !== undefined ? inventory[itemIndex] : undefined;
+
+  const targetType =
+    actionType === ATTACK
+      ? attackTargetType
+      : actionType === TECH
+      ? activeTech?.targetType
+      : actionType === ITEM
+      ? activeItem?.itemTargetType
+      : undefined;
+
+  const targetAllies =
+    actionType === TECH
+      ? activeTech?.targetAllies
+      : actionType === ITEM
+      ? activeItem?.itemTargetAllies
+      : undefined;
 
   useEffect(() => {
     setActionType(undefined);
@@ -148,23 +189,73 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
     };
   }, [techIndex, itemIndex, actionType, handleClose]);
 
+  useEffect(() => {
+    console.log(actionType);
+    console.log(targetType);
+    console.log(rightEnemyGroup?.entities?.length);
+
+    if (!actionType || !targetType) return;
+
+    if (
+      targetType === ALL ||
+      (actionType === ATTACK && !rightEnemyGroup?.entities?.length) ||
+      ((actionType === TECH || actionType === ITEM) &&
+        ((targetAllies && targetType === GROUP) ||
+          (!targetAllies && !rightEnemyGroup?.entities?.length)))
+    ) {
+      const target = {
+        group: targetAllies
+          ? PLAYER_GROUP
+          : targetType === ALL && rightEnemyGroup?.entities?.length
+          ? [LEFT_ENEMY_GROUP, RIGHT_ENEMY_GROUP]
+          : LEFT_ENEMY_GROUP,
+        index: targetType === ENTITY ? 0 : undefined,
+      };
+
+      dispatch(
+        queueAction({
+          heroIndex: activeHeroIndex,
+          target: target,
+          type: actionType,
+          techIndex,
+          itemIndex,
+        })
+      );
+      handleClose();
+    }
+  }, [
+    activeHeroIndex,
+    actionType,
+    targetType,
+    targetAllies,
+    rightEnemyGroup,
+    handleClose,
+    dispatch,
+    itemIndex,
+    techIndex,
+    inventory,
+    techniques,
+  ]);
+
   return (
     <>
       <ActiveHeroWindow>{name}</ActiveHeroWindow>
 
       <ActionMenu>
-        <Button
-          onClick={() => {
-            setActionType(ATTACK);
-          }}
-        >
-          <Sprite
-            src="./assets/attack-icon.png"
-            width={16}
-            height={16}
-            alt="attack icon"
-          />
-        </Button>
+        {attackTargetType && (
+          <Button
+            onClick={() => {
+              setActionType(ATTACK);
+            }}
+          >
+            <Sprite
+              src="./assets/attack-icon.png"
+              width={16}
+              height={16}
+              alt="attack icon"
+            />
+          </Button>
+        )}
         <Button
           onClick={() => {
             setActionType(TECH);
@@ -254,13 +345,13 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
         </ItemMenu>
       )}
 
-      {(actionType === ATTACK ||
-        (actionType === TECH && techIndex !== undefined) ||
-        (actionType === ITEM && itemIndex !== undefined)) && (
-        <TargetMenu style={{}}>
-          {/* TODO: need to use currently selected item/tech, as well as number of enemy groups, etc., to determine target type */}
+      {actionType &&
+      (targetType === ENTITY || targetType === GROUP) &&
+      !targetAllies &&
+      rightEnemyGroup?.entities?.length ? (
+        <TargetMenu>
           <Menu>
-            <MenuItem pixelMultiplier={pixelMultiplier} active={true}>
+            <MenuItem pixelMultiplier={pixelMultiplier}>
               <Button
                 onClick={() => {
                   dispatch(
@@ -268,14 +359,8 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
                       heroIndex: activeHeroIndex,
                       target: { group: LEFT_ENEMY_GROUP, index: 0 },
                       type: actionType,
-                      item:
-                        itemIndex !== undefined
-                          ? inventory[itemIndex]
-                          : undefined,
-                      tech:
-                        techIndex !== undefined
-                          ? techniques[techIndex]
-                          : undefined,
+                      techIndex,
+                      itemIndex,
                     })
                   );
                   handleClose();
@@ -286,7 +371,7 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
             </MenuItem>
 
             {Boolean(rightEnemyGroup.entities) && (
-              <MenuItem pixelMultiplier={pixelMultiplier} active={true}>
+              <MenuItem pixelMultiplier={pixelMultiplier}>
                 <Button
                   onClick={() => {
                     dispatch(
@@ -294,14 +379,8 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
                         heroIndex: activeHeroIndex,
                         target: { group: RIGHT_ENEMY_GROUP, index: 0 },
                         type: actionType,
-                        item:
-                          itemIndex !== undefined
-                            ? inventory[itemIndex]
-                            : undefined,
-                        tech:
-                          techIndex !== undefined
-                            ? techniques[techIndex]
-                            : undefined,
+                        techIndex,
+                        itemIndex,
                       })
                     );
                     handleClose();
@@ -313,7 +392,32 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
             )}
           </Menu>
         </TargetMenu>
-      )}
+      ) : actionType && targetType === ENTITY && targetAllies ? (
+        <TargetMenu>
+          <Menu>
+            {playerGroup.entities.map((hero, index) => (
+              <MenuItem pixelMultiplier={pixelMultiplier}>
+                <Button
+                  onClick={() => {
+                    dispatch(
+                      queueAction({
+                        heroIndex: activeHeroIndex,
+                        target: { group: PLAYER_GROUP, index },
+                        type: actionType,
+                        techIndex,
+                        itemIndex,
+                      })
+                    );
+                    handleClose();
+                  }}
+                >
+                  {hero.name}
+                </Button>
+              </MenuItem>
+            ))}
+          </Menu>
+        </TargetMenu>
+      ) : null}
     </>
   );
 };
