@@ -90,7 +90,6 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
   const [techIndex, setTechIndex] = useState<number | undefined>();
 
   const { name, index: activeHeroIndex, inventory, techniques } = activeHero;
-  console.log(activeHero);
 
   useEffect(() => {
     setActionType(undefined);

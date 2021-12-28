@@ -95,7 +95,7 @@ const PlayerInfo = () => {
       )}
 
       <PlayerButtons>
-        <div>ATTK</div>
+        <div>FGHT</div>
         <PlayerButton
           disabled={
             activeHeroIndex !== undefined ||
@@ -107,9 +107,8 @@ const PlayerInfo = () => {
           }
           onClick={startNewRound}
         />
-        <div>ORDR</div>
-        <PlayerButton disabled onClick={() => {}} />
-        <button
+        <div>STGY</div>
+        <PlayerButton
           disabled={
             playerInterrupt ||
             queueIndex === null ||
@@ -118,9 +117,7 @@ const PlayerInfo = () => {
           onClick={() => {
             dispatch(setPlayerInterrupt(true));
           }}
-        >
-          Stop
-        </button>
+        />
         <button
           onClick={() => {
             dispatch(setPlayerInterrupt(true));

@@ -50,7 +50,7 @@ const BattleAnimation = () => {
         {combinedEnemies.map(
           ({
             id,
-            type, // TODO: consider renaming this to entityType
+            name,
             status,
             leftPosition,
             currentAnimation,
@@ -80,7 +80,7 @@ const BattleAnimation = () => {
                 <AnimatedSprite
                   height={64}
                   width={64}
-                  spriteImg={type ? String(type).toLowerCase() : 'froggy'}
+                  spriteImg={name ? String(name).toLowerCase() : 'froggy'}
                   frames={frames}
                   duration={duration}
                   style={{
