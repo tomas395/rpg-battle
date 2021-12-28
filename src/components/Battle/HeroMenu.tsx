@@ -23,6 +23,9 @@ import Sprite from '../Sprite';
 const { queueAction } = actionCreators;
 
 const ActiveHeroWindow = styled(Window)`
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
   position: absolute;
   top: 0;
   left: 50%;

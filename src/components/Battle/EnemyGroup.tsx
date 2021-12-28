@@ -4,23 +4,21 @@ import { EntityTypesEnum } from '../../constants';
 import Window from '../Window';
 
 const EnemyGroupContainer = styled.div`
-  width: 35%;
+  width: 45%;
   display: flex;
   justify-content: flex-end;
 `;
-
-const EnemyMessage = styled(Window)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 150px;
-`;
-
 const EnemyGroupName = styled(Window)`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 75%;
+  justify-content: flex-start;
+  align-items: flex-end;
+  flex: 0 0 70%;
+`;
+const EnemyMessage = styled(Window)`
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  flex: 0 0 30%;
 `;
 
 interface EnemyGroupProps {
