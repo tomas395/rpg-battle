@@ -22,14 +22,12 @@ const {
   SET_GROUP_MESSAGE,
   SET_ENTITY_STATUS,
   SET_ENTITY_ANIMATION,
-  ENTITY_DAMAGE,
+  UPDATE_ENTITY_HP,
+  UPDATE_ENTITY_TP,
 } = actionTypes;
 
 const reducer = (state: AppStateType, action: ActionType) => {
   const { type, payload } = action;
-  // console.log('*** reducer');
-  // console.log(type);
-  // console.log(payload);
 
   switch (type) {
     case SET_PIXEL_MULTIPLIER: {
@@ -259,11 +257,11 @@ const reducer = (state: AppStateType, action: ActionType) => {
         groups: newGroups,
       };
     }
-    case ENTITY_DAMAGE: {
+    case UPDATE_ENTITY_HP: {
       const {
         target: { group: targetGroup, index: targetIndex },
-        attackPower,
-      }: { target: TargetType; attackPower: number } = payload;
+        offset,
+      }: { target: TargetType; offset: number } = payload;
 
       let newGroups = { ...state.groups };
 
@@ -273,13 +271,16 @@ const reducer = (state: AppStateType, action: ActionType) => {
             ...newGroups[groupName],
             entities: newGroups[groupName].entities.map((entity) => ({
               ...entity,
-              hp: entity.hp - attackPower,
+              hp: Math.min(entity.maxHp, entity.hp + offset),
             })),
           };
         });
       } else if (targetIndex === undefined) {
         const newGroupEntities = newGroups[targetGroup].entities.map(
-          (entity) => ({ ...entity, hp: entity.hp - attackPower })
+          (entity) => ({
+            ...entity,
+            hp: Math.min(entity.maxHp, entity.hp + offset),
+          })
         );
         newGroups = {
           ...newGroups,
@@ -291,7 +292,63 @@ const reducer = (state: AppStateType, action: ActionType) => {
       } else {
         const newEntity = {
           ...newGroups[targetGroup].entities[targetIndex],
-          hp: newGroups[targetGroup].entities[targetIndex].hp - attackPower,
+          hp: Math.min(
+            newGroups[targetGroup].entities[targetIndex].maxHp,
+            newGroups[targetGroup].entities[targetIndex].hp + offset
+          ),
+        };
+        const newGroupEntities = [
+          ...newGroups[targetGroup].entities.slice(0, targetIndex),
+          newEntity,
+          ...newGroups[targetGroup].entities.slice(targetIndex + 1),
+        ];
+        newGroups = {
+          ...newGroups,
+          [targetGroup]: {
+            ...newGroups[targetGroup],
+            entities: newGroupEntities,
+          },
+        };
+      }
+
+      return {
+        ...state,
+        groups: newGroups,
+      };
+    }
+    case UPDATE_ENTITY_TP: {
+      const {
+        target: { group: targetGroup, index: targetIndex },
+        offset,
+      }: { target: TargetType; offset: number } = payload;
+
+      let newGroups = { ...state.groups };
+
+      if (Array.isArray(targetGroup)) {
+        targetGroup.forEach((groupName) => {
+          newGroups[groupName] = {
+            ...newGroups[groupName],
+            entities: newGroups[groupName].entities.map((entity) => ({
+              ...entity,
+              tp: entity.tp + offset,
+            })),
+          };
+        });
+      } else if (targetIndex === undefined) {
+        const newGroupEntities = newGroups[targetGroup].entities.map(
+          (entity) => ({ ...entity, tp: entity.tp + offset })
+        );
+        newGroups = {
+          ...newGroups,
+          [targetGroup]: {
+            ...newGroups[targetGroup],
+            entities: newGroupEntities,
+          },
+        };
+      } else {
+        const newEntity = {
+          ...newGroups[targetGroup].entities[targetIndex],
+          tp: newGroups[targetGroup].entities[targetIndex].tp + offset,
         };
         const newGroupEntities = [
           ...newGroups[targetGroup].entities.slice(0, targetIndex),

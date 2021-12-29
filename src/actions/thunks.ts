@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { EntityType, ActionType, TargetType, ActorType } from '../types';
+import { ActionType, TargetType, ActorType } from '../types';
 import {
   EXECUTING,
   POST_EXECUTION,
@@ -14,19 +14,26 @@ import {
   LEFT_ENEMY_GROUP,
   SLASH,
   ANIMATION_DURATION_MAP,
-  HERO_NAMES,
-  SHOOT,
+  AnimationTypesEnum,
+  USE,
+  DAMAGE,
+  HEAL,
+  POISON,
+  PARALYZE,
+  SLEEP,
 } from '../constants';
 import {
   setGameState,
   setEntityAnimation,
   setEntityStatus,
   setGroupMessage,
-  entityDamage,
+  updateEntityHP,
+  updateEntityTP,
   loseGame,
   winGame,
   incrementQueueIndex,
 } from './actionCreators';
+import { getTargetLeftPosition, retarget } from '../utils';
 
 // TODO: pass getState to this function and call it right before resolving to see if new game has started and stop triggering more animations if so
 function timeout(ms: number) {
@@ -45,82 +52,35 @@ export const attackThunk =
 
     const { group: actorGroup, index: actorIndex } = actor;
     const actorEntity = groups[actorGroup].entities[actorIndex];
-    let { group: targetGroup, index: targetIndex } = initialTarget;
+    const {
+      equipment: { leftHand, rightHand },
+    } = actorEntity;
 
-    // retargeting logic
-    if (Array.isArray(targetGroup)) {
-      targetGroup.filter(
-        (group) =>
-          groups[group].entities.findIndex(
-            ({ hp }: { hp: number }) => hp > 0
-          ) !== -1
-      );
-      // TODO: if no living entities in any target group maybe add some sort of skip flag to check below so we only show actor animation with no other effects
-    } else if (targetIndex === undefined) {
-      if (targetGroup !== PLAYER_GROUP) {
-        if (
-          groups[targetGroup].entities.findIndex(
-            ({ hp }: { hp: number }) => hp > 0
-          ) === -1
-        ) {
-          targetGroup =
-            targetGroup === LEFT_ENEMY_GROUP
-              ? RIGHT_ENEMY_GROUP
-              : LEFT_ENEMY_GROUP;
-        }
-      }
-    } else {
-      // TODO: this is hacky, we are checking to see if we have an index, then ignoring it and picking a random one
-      let livingTargetGroupEntities = groups[targetGroup].entities.filter(
-        (entity: EntityType) => entity.hp > 0
-      );
+    let { group: initialTargetGroup, index: initialTargetIndex } =
+      initialTarget;
 
-      if (
-        actorGroup === PLAYER_GROUP &&
-        livingTargetGroupEntities.length === 0
-      ) {
-        targetGroup =
-          targetGroup === LEFT_ENEMY_GROUP
-            ? RIGHT_ENEMY_GROUP
-            : LEFT_ENEMY_GROUP;
+    const target = retarget(
+      groups,
+      actorGroup,
+      initialTargetGroup,
+      initialTargetIndex
+    );
+    const { group: targetGroup, index: targetIndex } = target;
 
-        livingTargetGroupEntities = groups[targetGroup].entities.filter(
-          (entity: EntityType) => entity.hp > 0
-        );
-      }
+    const attackAnimationType: AnimationTypesEnum =
+      leftHand && 'twoHanded' in leftHand && leftHand.twoHanded
+        ? leftHand.attackType
+        : leftHand && 'attackType' in leftHand
+        ? leftHand.attackType
+        : rightHand && 'attackType' in rightHand
+        ? rightHand.attackType
+        : SLASH;
 
-      targetIndex =
-        livingTargetGroupEntities[
-          Math.floor(Math.random() * livingTargetGroupEntities.length)
-        ].index;
-    }
-
-    const target = {
-      group: targetGroup,
-      index: targetIndex,
-    };
-
-    // TODO: check actor equipped weapon from state to determine which animation to trigger (SLASH vs SHOOT, etc.)
-    const attackAnimationType =
-      actorEntity.name === HERO_NAMES[1] ? SHOOT : SLASH;
-
-    // TODO: yeaaaa... we need to handle leftPosition percentage another way
-    const targetLeftPosition =
-      targetIndex !== undefined && !Array.isArray(targetGroup)
-        ? groups[targetGroup].entities[targetIndex].leftPosition
-        : !Array.isArray(targetGroup)
-        ? String(
-            (Number(
-              groups[targetGroup].entities[0].leftPosition.replace('%', '')
-            ) +
-              Number(
-                groups[targetGroup].entities[
-                  groups[targetGroup].entities.length - 1
-                ].leftPosition.replace('%', '')
-              )) /
-              2
-          ) + '%'
-        : '50%';
+    const targetLeftPosition = getTargetLeftPosition(
+      groups,
+      targetGroup,
+      targetIndex
+    );
 
     dispatch(
       setEntityAnimation(actor, {
@@ -142,6 +102,7 @@ export const attackThunk =
 
     // TODO: use full actor and target entities from state to determine who gets hit and for how much
     // TODO: loop over target group if array
+    // TODO: check to see if targets are currently defending
     const attackPower = Math.floor(Math.random() * 5);
     let crit = false;
     if (Math.random() > 0.85) {
@@ -183,7 +144,7 @@ export const attackThunk =
           })
         );
       }
-      dispatch(entityDamage(target, crit ? attackPower * 2 : attackPower));
+      dispatch(updateEntityHP(target, crit ? -attackPower * 2 : -attackPower));
       if (crit) {
         dispatch(
           setGroupMessage({
@@ -218,6 +179,151 @@ export const attackThunk =
     dispatch(setGameState(POST_EXECUTION));
   };
 
+export const techThunk =
+  (actor: ActorType, initialTarget: TargetType, techIndex: number) =>
+  async (dispatch: Dispatch<ActionType>, getState: any) => {
+    const { groups } = getState();
+
+    const { group: actorGroup, index: actorIndex } = actor;
+    const actorEntity = groups[actorGroup].entities[actorIndex];
+    const { techniques } = actorEntity;
+
+    const techData = techniques[techIndex];
+    const { name, effect, power, tp } = techData || {};
+
+    let { group: initialTargetGroup, index: initialTargetIndex } =
+      initialTarget;
+    const target =
+      effect === DAMAGE
+        ? retarget(groups, actorGroup, initialTargetGroup, initialTargetIndex)
+        : initialTarget;
+    const { group: targetGroup, index: targetIndex } = target;
+
+    const targetLeftPosition = getTargetLeftPosition(
+      groups,
+      targetGroup,
+      targetIndex
+    );
+
+    const selfTargeting =
+      actorGroup === targetGroup && actorIndex === targetIndex;
+
+    dispatch(
+      setEntityAnimation(actor, {
+        type: USE,
+        left:
+          actorGroup === PLAYER_GROUP && targetGroup !== PLAYER_GROUP
+            ? targetLeftPosition
+            : undefined,
+      })
+    );
+
+    if (!selfTargeting) {
+      dispatch(
+        setEntityAnimation(target, {
+          type: TARGETED,
+          left:
+            actorGroup !== PLAYER_GROUP && targetIndex !== undefined
+              ? actorEntity.leftPosition
+              : undefined,
+        })
+      );
+    }
+
+    await timeout(ANIMATION_DURATION_MAP[USE]);
+
+    if (tp > actorEntity.tp) {
+      dispatch(setEntityAnimation(actor, IDLE));
+      dispatch(setEntityAnimation(target, IDLE));
+      dispatch(setGameState(POST_EXECUTION));
+      return;
+    }
+    dispatch(updateEntityTP(actor, -tp));
+
+    if (selfTargeting) {
+      dispatch(setEntityAnimation(actor, { type: TARGETED, left: -1 }));
+    } else {
+      dispatch(setEntityAnimation(actor, { type: IDLE, left: -1 }));
+    }
+
+    dispatch(
+      setGroupMessage({
+        target: { group: PLAYER_GROUP },
+        message: name,
+      })
+    );
+
+    // TODO: FX animation, probably move animation and timeouts into switch below
+    await timeout(500);
+
+    switch (effect) {
+      case DAMAGE: {
+        if (targetGroup !== PLAYER_GROUP) {
+          dispatch(
+            setGroupMessage({
+              target,
+              message: power,
+            })
+          );
+        }
+        dispatch(
+          setEntityAnimation(target, {
+            type: HURT,
+            left: -1,
+          })
+        );
+        await timeout(ANIMATION_DURATION_MAP[HURT]);
+        dispatch(updateEntityHP(target, -power));
+        break;
+      }
+      case HEAL: {
+        if (targetGroup !== PLAYER_GROUP) {
+          dispatch(
+            setGroupMessage({
+              target,
+              message: power,
+            })
+          );
+        }
+        await timeout(1000);
+        dispatch(updateEntityHP(target, power));
+        break;
+      }
+      case POISON: {
+        break;
+      }
+      case PARALYZE: {
+        break;
+      }
+      case SLEEP: {
+        break;
+      }
+    }
+
+    dispatch(
+      setGroupMessage({
+        target: { group: PLAYER_GROUP },
+        message: '',
+      })
+    );
+    if (targetGroup !== PLAYER_GROUP) {
+      dispatch(
+        setGroupMessage({
+          target,
+          message: '',
+        })
+      );
+    }
+    dispatch(setEntityAnimation(target, { type: IDLE, left: -1 }));
+
+    // need to dispatch this at the end of any queue action to progress the queue
+    dispatch(setGameState(POST_EXECUTION));
+  };
+
+export const itemThunk =
+  (actor: ActorType, target: TargetType, itemIndex: number) =>
+  async (dispatch: Dispatch<ActionType>, getState: any) => {};
+
 export const postExecutionThunk =
   () => async (dispatch: Dispatch<ActionType>, getState: any) => {
     const {
@@ -235,6 +341,7 @@ export const postExecutionThunk =
     for (const [index, hero] of playerGroup.entities.entries()) {
       const { status, currentAnimation, hp } = hero;
 
+      // TODO: account for revival?
       // TODO: will need to account for paralyzed as well
       if (hp > 0 && status === OK) {
         dispatch(

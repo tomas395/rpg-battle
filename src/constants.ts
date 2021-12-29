@@ -82,9 +82,9 @@ export const { ROLF, RUDO, NEI, AMY } = HeroesEnum;
 export enum EnemyTypesEnum {
   FROGGY = 'FROGGY',
   WRESTLER = 'WRESTLER',
-  DARKFALS = 'DARKFALS',
+  DARKFORCE = 'DARKFORCE',
 }
-export const { FROGGY, WRESTLER, DARKFALS } = EnemyTypesEnum;
+export const { FROGGY, WRESTLER, DARKFORCE } = EnemyTypesEnum;
 
 export enum TargetTypesEnum {
   ENTITY = 'ENTITY',

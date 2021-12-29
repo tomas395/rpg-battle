@@ -14,7 +14,8 @@ const dissolveAnimation = (pixelMultiplier: number) => keyframes`
 
 const DissolveContainer = styled((props) => <div {...props} />)`
   width: ${({ width, pixelMultiplier }) => width * pixelMultiplier}px;
-  mask: url(./assets/gradient-mask.png);
+  mask: ${({ dissolving }) =>
+    dissolving ? 'url(./assets/gradient-mask.png)' : 'none'};
   mask-size: ${({ pixelMultiplier }) => 128 * pixelMultiplier}px auto;
   mask-position: 0 -${({ pixelMultiplier }) => 1216 * pixelMultiplier}px;
   animation: ${({ pixelMultiplier }) => dissolveAnimation(pixelMultiplier)} 3s

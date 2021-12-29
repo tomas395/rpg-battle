@@ -73,7 +73,12 @@ const HeroCard = ({ hero, index, handleSelect }: HeroCardProps) => {
               {tp}
             </div>
           </div>
-          <div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+            }}
+          >
             <Sprite
               src={`./assets/${String(
                 queuedAction.type

@@ -1,8 +1,16 @@
-import { FROGGY, WRESTLER, DARKFALS, MONSTER } from '../constants';
+import {
+  FROGGY,
+  WRESTLER,
+  DARKFORCE,
+  MONSTER,
+  ATTACK,
+  PLAYER_GROUP,
+  TECH,
+} from '../constants';
 import { generateEntityAnimations } from '../utils';
 import TECHNIQUES from './techniques';
 
-const { RES, FOI } = TECHNIQUES;
+const { RES, FOI, LIGHTNING } = TECHNIQUES;
 
 const ENEMY_DATA = {
   [FROGGY]: {
@@ -20,6 +28,13 @@ const ENEMY_DATA = {
     techniques: [],
     animations: generateEntityAnimations(true),
     size: 1,
+    queuedAction: {
+      type: ATTACK,
+      target: {
+        group: PLAYER_GROUP,
+        index: 0,
+      },
+    },
   },
   [WRESTLER]: {
     type: MONSTER,
@@ -36,12 +51,19 @@ const ENEMY_DATA = {
     techniques: [],
     animations: generateEntityAnimations(true),
     size: 1,
+    queuedAction: {
+      type: ATTACK,
+      target: {
+        group: PLAYER_GROUP,
+        index: 0,
+      },
+    },
   },
-  [DARKFALS]: {
+  [DARKFORCE]: {
     type: MONSTER,
-    name: DARKFALS,
-    maxHp: 100,
-    hp: 100,
+    name: DARKFORCE,
+    maxHp: 2560,
+    hp: 2560,
     maxTp: 20,
     tp: 20,
     attack: 10,
@@ -49,9 +71,19 @@ const ENEMY_DATA = {
     speed: 3,
     inventory: [],
     equipment: [],
-    techniques: [RES, FOI],
+    techniques: [RES, FOI, LIGHTNING],
     animations: generateEntityAnimations(true),
     size: 4,
+    height: 120,
+    width: 320,
+    queuedAction: {
+      type: TECH,
+      target: {
+        group: PLAYER_GROUP,
+        // index: 0, // TODO: this ultimately controls what gets executed, need to always determine target by weapon/tech/item
+      },
+      techIndex: 2,
+    },
   },
 };
 

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { EntityTypesEnum } from '../../constants';
+import { EnemyTypesEnum } from '../../constants';
 import Window from '../Window';
 
 const EnemyGroupContainer = styled.div`
@@ -22,7 +22,7 @@ const EnemyMessage = styled(Window)`
 `;
 
 interface EnemyGroupProps {
-  type?: EntityTypesEnum;
+  type?: EnemyTypesEnum;
   message: string | number;
 }
 

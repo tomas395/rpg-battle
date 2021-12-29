@@ -55,6 +55,8 @@ const BattleAnimation = () => {
             leftPosition,
             currentAnimation,
             animations,
+            height,
+            width,
           }) => {
             const animationType = currentAnimation.type;
 
@@ -67,20 +69,20 @@ const BattleAnimation = () => {
                 key={id}
                 dissolving={gameState === NEW_GAME}
                 reverse
-                width={64}
+                width={width || 64}
                 style={{
                   position: 'absolute',
                   bottom: 0,
                   left: leftPosition,
-                  height: 64 * pixelMultiplier,
-                  width: 64 * pixelMultiplier,
+                  height: (height || 64) * pixelMultiplier,
+                  width: (width || 64) * pixelMultiplier,
                   transform: `translateX(-50%)`,
                 }}
               >
                 <AnimatedSprite
-                  height={64}
-                  width={64}
-                  spriteImg={name ? String(name).toLowerCase() : 'froggy'}
+                  height={height || 64}
+                  width={width || 64}
+                  spriteImg={String(name).toLowerCase()}
                   frames={frames}
                   duration={duration}
                   style={{

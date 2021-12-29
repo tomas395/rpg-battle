@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 import EnemyGroup from './EnemyGroup';
 import { AppStateContext } from '../../state';
-import { LEFT_ENEMY_GROUP, RIGHT_ENEMY_GROUP } from '../../constants';
+import {
+  DARKFORCE,
+  LEFT_ENEMY_GROUP,
+  RIGHT_ENEMY_GROUP,
+} from '../../constants';
 
 const EnemyInfoContainer = styled.section`
   flex: 0 1 20%;
@@ -23,11 +27,18 @@ const EnemyInfo = () => {
 
   return (
     <EnemyInfoContainer>
-      <EnemyGroup type={leftEnemyGroup.type} message={leftEnemyGroup.message} />
-      <EnemyGroup
-        type={rightEnemyGroup.type}
-        message={rightEnemyGroup.message}
-      />
+      {leftEnemyGroup.type !== DARKFORCE && (
+        <>
+          <EnemyGroup
+            type={leftEnemyGroup.type}
+            message={leftEnemyGroup.message}
+          />
+          <EnemyGroup
+            type={rightEnemyGroup.type}
+            message={rightEnemyGroup.message}
+          />
+        </>
+      )}
     </EnemyInfoContainer>
   );
 };

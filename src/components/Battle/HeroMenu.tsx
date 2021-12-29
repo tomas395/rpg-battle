@@ -71,7 +71,7 @@ const ItemMenu = styled(Window)`
   height: 160%;
   padding-top: 1em;
 `;
-const TargetMenu = styled(Window)`
+const TargetMenu = styled((props) => <Window {...props} />)`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -80,7 +80,7 @@ const TargetMenu = styled(Window)`
   left: 58%;
   transform: translateY(-100%);
   width: 34%;
-  height: 73%;
+  height: ${({ height }: any) => `${height}`};
   padding-top: 1em;
 `;
 const Menu = styled.ul`
@@ -193,12 +193,9 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
   }, [techIndex, itemIndex, actionType, handleClose]);
 
   useEffect(() => {
-    console.log(actionType);
-    console.log(targetType);
-    console.log(rightEnemyGroup?.entities?.length);
-
     if (!actionType || !targetType) return;
 
+    // TODO: account for single hero
     if (
       targetType === ALL ||
       (actionType === ATTACK && !rightEnemyGroup?.entities?.length) ||
@@ -245,6 +242,7 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
       <ActiveHeroWindow>{name}</ActiveHeroWindow>
 
       <ActionMenu>
+        {/* TODO: test this conditional (no equipped weapon) */}
         {attackTargetType && (
           <Button
             onClick={() => {
@@ -261,7 +259,11 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
         )}
         <Button
           onClick={() => {
-            setActionType(TECH);
+            if (techniques.length) {
+              setActionType(TECH);
+            } else {
+              // TODO: display message
+            }
           }}
         >
           <Sprite
@@ -273,7 +275,11 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
         </Button>
         <Button
           onClick={() => {
-            setActionType(ITEM);
+            if (inventory.length) {
+              setActionType(ITEM);
+            } else {
+              // TODO: display message
+            }
           }}
         >
           <Sprite
@@ -352,8 +358,9 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
       (targetType === ENTITY || targetType === GROUP) &&
       !targetAllies &&
       rightEnemyGroup?.entities?.length ? (
-        <TargetMenu>
+        <TargetMenu height="76%">
           <Menu>
+            {/* TODO: only display groups with living entities */}
             <MenuItem pixelMultiplier={pixelMultiplier}>
               <Button
                 onClick={() => {
@@ -373,6 +380,7 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
               </Button>
             </MenuItem>
 
+            {/* TODO: only display groups with living entities */}
             {Boolean(rightEnemyGroup.entities) && (
               <MenuItem pixelMultiplier={pixelMultiplier}>
                 <Button
@@ -396,7 +404,7 @@ const HeroMenu: React.FC<HeroMenuProps> = ({ activeHero, handleClose }) => {
           </Menu>
         </TargetMenu>
       ) : actionType && targetType === ENTITY && targetAllies ? (
-        <TargetMenu>
+        <TargetMenu height="133%">
           <Menu>
             {playerGroup.entities.map((hero, index) => (
               <MenuItem pixelMultiplier={pixelMultiplier}>

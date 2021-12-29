@@ -1,4 +1,4 @@
-import { DAMAGE, ENTITY, HEAL } from '../constants';
+import { DAMAGE, ENTITY, GROUP, HEAL } from '../constants';
 
 const ITEMS = {
   RES: {
@@ -6,14 +6,21 @@ const ITEMS = {
     targetType: ENTITY,
     targetAllies: true,
     effect: HEAL,
-    power: 10,
-    tp: 5,
+    power: 20,
+    tp: 3,
   },
   FOI: {
     name: 'FOI',
     targetType: ENTITY,
     effect: DAMAGE,
-    power: 10,
+    power: 14, // TODO: add support for value ranges
+    tp: 2,
+  },
+  LIGHTNING: {
+    name: 'LIGHTNING',
+    targetType: GROUP,
+    effect: DAMAGE,
+    power: 100,
     tp: 5,
   },
 };

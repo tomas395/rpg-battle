@@ -14,12 +14,13 @@ import {
   HeroesEnum,
   EnemyTypesEnum,
   OK,
-  ATTACK,
   IDLE,
   ROLF,
   FROGGY,
   WRESTLER,
   NEI,
+  RUDO,
+  AMY,
 } from '../constants';
 import HEROES from '../data/heroes';
 import ENEMIES from '../data/enemies';
@@ -41,7 +42,7 @@ const NewGameMenu = () => {
   const history = useHistory();
   const [, dispatch] = useContext(AppStateContext);
 
-  const [heroes, setHeroes] = useState<HeroesEnum[]>([ROLF, NEI]);
+  const [heroes, setHeroes] = useState<HeroesEnum[]>([ROLF, RUDO, NEI, AMY]);
   const [leftEnemyType, setLeftEnemyType] = useState<
     EnemyTypesEnum | undefined
   >(FROGGY);
@@ -80,13 +81,6 @@ const NewGameMenu = () => {
             leftPosition: `${
               index === 0 ? 40 : index === 1 ? 60 : index === 2 ? 20 : 80
             }%`,
-            queuedAction: {
-              type: ATTACK,
-              target: {
-                group: LEFT_ENEMY_GROUP,
-                index: 0,
-              },
-            },
             currentAnimation: { type: IDLE },
           })),
         },
@@ -102,15 +96,8 @@ const NewGameMenu = () => {
                   group: LEFT_ENEMY_GROUP,
                   status: OK,
                   leftPosition: `${
-                    (index + 1) * (100 / (leftSlots + rightSlots + 1))
+                    (index + 1) * (100 / (leftEnemyCount + rightEnemyCount + 1))
                   }%`,
-                  queuedAction: {
-                    type: ATTACK,
-                    target: {
-                      group: PLAYER_GROUP,
-                      index: 0,
-                    },
-                  },
                   currentAnimation: { type: IDLE },
                 }))
               : [],
@@ -128,15 +115,8 @@ const NewGameMenu = () => {
                   status: OK,
                   leftPosition: `${
                     (leftEnemyCount + index + 1) *
-                    (100 / (leftSlots + rightSlots + 1))
+                    (100 / (leftEnemyCount + rightEnemyCount + 1))
                   }%`,
-                  queuedAction: {
-                    type: ATTACK,
-                    target: {
-                      group: PLAYER_GROUP,
-                      index: 0,
-                    },
-                  },
                   currentAnimation: { type: IDLE },
                 }))
               : [],
@@ -162,36 +142,52 @@ const NewGameMenu = () => {
       --------------
       <br />
       <h4>Heroes: </h4>
-      <select
-        onClick={({ target: { value } }: any) => {
-          // TODO: ts
-          const newHeroes = [...heroes];
-          newHeroes.push(value as HeroesEnum);
-          setHeroes(newHeroes);
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-around',
+          textAlign: 'left',
         }}
-        size={4}
-        style={{ minWidth: 100 }}
       >
-        {Object.values(HeroesEnum)
-          .filter((heroName: HeroesEnum) => heroes.indexOf(heroName) === -1)
-          .map((heroName: HeroesEnum) => (
-            <option value={heroName}>{heroName}</option>
-          ))}
-      </select>
-      <select
-        onClick={({ target: { value } }: any) => {
-          // TODO: ts
-          const newHeroes = [...heroes];
-          newHeroes.splice(heroes.indexOf(value as HeroesEnum), 1);
-          setHeroes(newHeroes);
-        }}
-        size={4}
-        style={{ minWidth: 100 }}
-      >
-        {heroes.map((heroName: HeroesEnum) => (
-          <option value={heroName}>{heroName}</option>
-        ))}
-      </select>
+        <div>
+          <label>Out:</label>
+          <br />
+          <select
+            onClick={({ target: { value } }: any) => {
+              // TODO: ts
+              const newHeroes = [...heroes];
+              newHeroes.push(value as HeroesEnum);
+              setHeroes(newHeroes);
+            }}
+            size={4}
+            style={{ minWidth: 100 }}
+          >
+            {Object.values(HeroesEnum)
+              .filter((heroName: HeroesEnum) => heroes.indexOf(heroName) === -1)
+              .map((heroName: HeroesEnum) => (
+                <option value={heroName}>{heroName}</option>
+              ))}
+          </select>
+        </div>
+        <div>
+          <label>In:</label>
+          <br />
+          <select
+            onClick={({ target: { value } }: any) => {
+              // TODO: ts
+              const newHeroes = [...heroes];
+              newHeroes.splice(heroes.indexOf(value as HeroesEnum), 1);
+              setHeroes(newHeroes);
+            }}
+            size={4}
+            style={{ minWidth: 100 }}
+          >
+            {heroes.map((heroName: HeroesEnum) => (
+              <option value={heroName}>{heroName}</option>
+            ))}
+          </select>
+        </div>
+      </div>
       <br />
       --------------
       <h4>Enemies: </h4>

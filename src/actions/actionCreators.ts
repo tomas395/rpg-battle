@@ -12,7 +12,8 @@ import {
   SET_GROUP_MESSAGE,
   SET_ENTITY_ANIMATION,
   SET_ENTITY_STATUS,
-  ENTITY_DAMAGE,
+  UPDATE_ENTITY_HP,
+  UPDATE_ENTITY_TP,
 } from './actionTypes';
 import { TargetType, EntityActionType } from '../types';
 import {
@@ -115,7 +116,12 @@ export const setEntityAnimation = (
   payload: { target, animation },
 });
 
-export const entityDamage = (target: TargetType, attackPower: number) => ({
-  type: ENTITY_DAMAGE,
-  payload: { target, attackPower },
+export const updateEntityHP = (target: TargetType, offset: number) => ({
+  type: UPDATE_ENTITY_HP,
+  payload: { target, offset },
+});
+
+export const updateEntityTP = (target: TargetType, offset: number) => ({
+  type: UPDATE_ENTITY_TP,
+  payload: { target, offset },
 });

@@ -12,6 +12,7 @@ import {
   EffectTypesEnum,
   ArmorTypesEnum,
   HeroesEnum,
+  EnemyTypesEnum,
 } from './constants';
 
 export interface AppStateType {
@@ -54,6 +55,8 @@ export interface EntityType {
   queuedAction: {
     type: EntityActionTypesEnum;
     target: TargetType;
+    techIndex: number;
+    itemIndex: number;
   };
   currentAnimation: {
     type: AnimationTypesEnum;
@@ -62,6 +65,8 @@ export interface EntityType {
   animations: {
     [key in AnimationTypesEnum]: AnimationType;
   };
+  height?: number;
+  width?: number;
 }
 
 export interface EnemyType extends EntityType {
@@ -69,7 +74,7 @@ export interface EnemyType extends EntityType {
 }
 
 export interface EntityGroupType {
-  type?: EntityTypesEnum;
+  type?: EnemyTypesEnum;
   entities: Array<EntityType | EnemyType>;
   message: string;
 }
@@ -128,6 +133,8 @@ export interface EntityActionType {
   type: any; // TODO
   actor: ActorType;
   target: TargetType;
+  techIndex?: number;
+  itemIndex?: number;
 }
 
 export interface ActorType {
