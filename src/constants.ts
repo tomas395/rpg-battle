@@ -37,10 +37,10 @@ export const { PLAYER_GROUP, LEFT_ENEMY_GROUP, RIGHT_ENEMY_GROUP } = GroupsEnum;
 export enum EntityTypesEnum {
   HUMAN = 'HUMAN',
   NUMAN = 'NUMAN',
-  FROGGY = 'FROGGY',
-  SAKOFF = 'SAKOFF',
+  MONSTER = 'MONSTER',
+  ROBOT = 'ROBOT',
 }
-export const { HUMAN, NUMAN, FROGGY, SAKOFF } = EntityTypesEnum;
+export const { HUMAN, NUMAN, MONSTER, ROBOT } = EntityTypesEnum;
 
 export enum EntityStatusesEnum {
   OK = 'OK',
@@ -71,3 +71,40 @@ export const { IDLE, SLASH, SHOOT, USE, TARGETED, HURT, DYING } =
   AnimationTypesEnum;
 
 export const HERO_NAMES = ['ROLF', 'RUDO', 'NEI', 'AMY'];
+export enum HeroesEnum {
+  ROLF = 'ROLF',
+  RUDO = 'RUDO',
+  NEI = 'NEI',
+  AMY = 'AMY',
+}
+export const { ROLF, RUDO, NEI, AMY } = HeroesEnum;
+
+export enum EnemyTypesEnum {
+  FROGGY = 'FROGGY',
+  WRESTLER = 'WRESTLER',
+  DARKFORCE = 'DARKFORCE',
+}
+export const { FROGGY, WRESTLER, DARKFORCE } = EnemyTypesEnum;
+
+export enum TargetTypesEnum {
+  ENTITY = 'ENTITY',
+  GROUP = 'GROUP',
+  ALL = 'ALL',
+}
+export const { ENTITY, GROUP, ALL } = TargetTypesEnum;
+
+export enum ArmorTypesEnum {
+  HEAD = 'HEAD',
+  BODY = 'BODY',
+  LEGS = 'LEGS',
+}
+export const { HEAD, BODY, LEGS } = ArmorTypesEnum;
+
+export enum EffectTypesEnum {
+  DAMAGE = 'DAMAGE',
+  HEAL = 'HEAL',
+  POISON = 'POISON',
+  PARALYZE = 'PARALYZE',
+  SLEEP = 'SLEEP',
+}
+export const { DAMAGE, HEAL, POISON, PARALYZE, SLEEP } = EffectTypesEnum;

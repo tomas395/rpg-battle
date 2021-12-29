@@ -8,12 +8,13 @@ import {
   INCREMENT_QUEUE_INDEX,
   SET_GAME_STATE,
   SET_PLAYER_INTERRUPT,
-  SET_ACTIVE_HERO,
   QUEUE_ACTION,
   SET_GROUP_MESSAGE,
   SET_ENTITY_ANIMATION,
   SET_ENTITY_STATUS,
-  ENTITY_DAMAGE,
+  UPDATE_ENTITY_HP,
+  UPDATE_ENTITY_TP,
+  REMOVE_ENTITY_ITEM,
 } from './actionTypes';
 import { TargetType, EntityActionType } from '../types';
 import {
@@ -61,25 +62,26 @@ export const setPlayerInterrupt = (interrupt: boolean) => ({
   payload: interrupt,
 });
 
-export const setActiveHero = (activeIndex: number) => ({
-  type: SET_ACTIVE_HERO,
-  payload: activeIndex,
-});
-
 export const queueAction = ({
   heroIndex,
   target,
   type,
+  techIndex,
+  itemIndex,
 }: {
   heroIndex: number;
-  target: TargetType;
+  target?: TargetType;
   type: EntityActionTypesEnum;
+  techIndex?: number;
+  itemIndex?: number;
 }) => ({
   type: QUEUE_ACTION,
   payload: {
     heroIndex,
     target,
     type,
+    techIndex,
+    itemIndex,
   },
 });
 
@@ -115,7 +117,17 @@ export const setEntityAnimation = (
   payload: { target, animation },
 });
 
-export const entityDamage = (target: TargetType, attackPower: number) => ({
-  type: ENTITY_DAMAGE,
-  payload: { target, attackPower },
+export const updateEntityHP = (target: TargetType, offset: number) => ({
+  type: UPDATE_ENTITY_HP,
+  payload: { target, offset },
+});
+
+export const updateEntityTP = (target: TargetType, offset: number) => ({
+  type: UPDATE_ENTITY_TP,
+  payload: { target, offset },
+});
+
+export const removeEntityItem = (target: TargetType, itemIndex: number) => ({
+  type: REMOVE_ENTITY_ITEM,
+  payload: { target, itemIndex },
 });

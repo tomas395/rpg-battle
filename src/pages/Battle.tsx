@@ -10,13 +10,14 @@ import {
   ATTACK,
   TECH,
   ITEM,
-  DEFEND,
   INIT,
   PLAYER_INPUT,
   POST_EXECUTION,
+  OK,
 } from '../constants';
 import { generateQueue } from '../utils';
 import Battle from '../components/Battle';
+import { itemThunk, techThunk } from '../actions/thunks';
 
 const {
   startNewRound: startNewRoundAction,
@@ -45,32 +46,42 @@ const BattlePage = () => {
       prevQueueIndex.current = queueIndex;
 
       if (queue[queueIndex]) {
-        const { type, actor, target } = queue[queueIndex];
+        const { type, actor, target, techIndex, itemIndex } = queue[queueIndex];
 
         const { group: actorGroup, index: actorIndex } = actor;
         const actorEntity = groups[actorGroup].entities[actorIndex];
 
         // TODO: also check status (paralyzed, etc.)
-        if (actorEntity.hp <= 0) {
+        if (actorEntity.hp <= 0 || actorEntity.status !== OK) {
           dispatch(incrementQueueIndex());
           return;
         }
 
-        // TODO
-        let action =
-          type === ATTACK
-            ? attackThunk
-            : type === TECH
-            ? attackThunk
-            : type === ITEM
-            ? attackThunk
-            : type === DEFEND
-            ? attackThunk
-            : undefined;
-
-        if (typeof action === 'function') {
-          dispatch(action(actor, target));
+        switch (type) {
+          case ATTACK: {
+            dispatch(attackThunk(actor, target));
+            break;
+          }
+          case TECH: {
+            // TODO: figure out a better way to guarantee techIndex/itemIndex exists for these types of action (maybe need more specific action types that extend the generic EntityActionType)
+            if (techIndex !== undefined) {
+              dispatch(techThunk(actor, target, techIndex));
+            }
+            break;
+          }
+          case ITEM: {
+            if (itemIndex !== undefined) {
+              dispatch(itemThunk(actor, target, itemIndex));
+            }
+            break;
+          }
+          default: {
+            dispatch(incrementQueueIndex());
+          }
         }
+
+        // TODO: determine whether or not to update/reset queuedAction for actor
+        // - reset to ATTACK/DEFEND if ITEM or insufficient TP to execute queued TECH
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
       } else {

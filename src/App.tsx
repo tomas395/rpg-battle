@@ -1,5 +1,10 @@
 import { useContext, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 import './Reset.css';
@@ -71,6 +76,7 @@ export default function App() {
           <Route exact path="/new-game" component={NewGame} />
           <Route exact path="/battle" component={Battle} />
           <Route exact path="/about" component={About} />
+          <Redirect to="/" />
         </Switch>
       </AppContainer>
     </Router>

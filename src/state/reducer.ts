@@ -18,19 +18,17 @@ const {
   INCREMENT_QUEUE_INDEX,
   SET_GAME_STATE,
   SET_PLAYER_INTERRUPT,
-  // SET_ACTIVE_HERO,
   QUEUE_ACTION,
   SET_GROUP_MESSAGE,
   SET_ENTITY_STATUS,
   SET_ENTITY_ANIMATION,
-  ENTITY_DAMAGE,
+  UPDATE_ENTITY_HP,
+  UPDATE_ENTITY_TP,
+  REMOVE_ENTITY_ITEM,
 } = actionTypes;
 
 const reducer = (state: AppStateType, action: ActionType) => {
   const { type, payload } = action;
-  // console.log('*** reducer');
-  // console.log(type);
-  // console.log(payload);
 
   switch (type) {
     case SET_PIXEL_MULTIPLIER: {
@@ -260,11 +258,11 @@ const reducer = (state: AppStateType, action: ActionType) => {
         groups: newGroups,
       };
     }
-    case ENTITY_DAMAGE: {
+    case UPDATE_ENTITY_HP: {
       const {
         target: { group: targetGroup, index: targetIndex },
-        attackPower,
-      }: { target: TargetType; attackPower: number } = payload;
+        offset,
+      }: { target: TargetType; offset: number } = payload;
 
       let newGroups = { ...state.groups };
 
@@ -274,13 +272,16 @@ const reducer = (state: AppStateType, action: ActionType) => {
             ...newGroups[groupName],
             entities: newGroups[groupName].entities.map((entity) => ({
               ...entity,
-              hp: entity.hp - attackPower,
+              hp: Math.min(entity.maxHp, entity.hp + offset),
             })),
           };
         });
       } else if (targetIndex === undefined) {
         const newGroupEntities = newGroups[targetGroup].entities.map(
-          (entity) => ({ ...entity, hp: entity.hp - attackPower })
+          (entity) => ({
+            ...entity,
+            hp: Math.min(entity.maxHp, entity.hp + offset),
+          })
         );
         newGroups = {
           ...newGroups,
@@ -292,7 +293,10 @@ const reducer = (state: AppStateType, action: ActionType) => {
       } else {
         const newEntity = {
           ...newGroups[targetGroup].entities[targetIndex],
-          hp: newGroups[targetGroup].entities[targetIndex].hp - attackPower,
+          hp: Math.min(
+            newGroups[targetGroup].entities[targetIndex].maxHp,
+            newGroups[targetGroup].entities[targetIndex].hp + offset
+          ),
         };
         const newGroupEntities = [
           ...newGroups[targetGroup].entities.slice(0, targetIndex),
@@ -313,21 +317,102 @@ const reducer = (state: AppStateType, action: ActionType) => {
         groups: newGroups,
       };
     }
-    // case SET_ACTIVE_HERO: {
-    //   return {
-    //     ...state,
-    //     activeHero: payload,
-    //   };
-    // }
+    case UPDATE_ENTITY_TP: {
+      const {
+        target: { group: targetGroup, index: targetIndex },
+        offset,
+      }: { target: TargetType; offset: number } = payload;
+
+      let newGroups = { ...state.groups };
+
+      if (Array.isArray(targetGroup)) {
+        targetGroup.forEach((groupName) => {
+          newGroups[groupName] = {
+            ...newGroups[groupName],
+            entities: newGroups[groupName].entities.map((entity) => ({
+              ...entity,
+              tp: entity.tp + offset,
+            })),
+          };
+        });
+      } else if (targetIndex === undefined) {
+        const newGroupEntities = newGroups[targetGroup].entities.map(
+          (entity) => ({ ...entity, tp: entity.tp + offset })
+        );
+        newGroups = {
+          ...newGroups,
+          [targetGroup]: {
+            ...newGroups[targetGroup],
+            entities: newGroupEntities,
+          },
+        };
+      } else {
+        const newEntity = {
+          ...newGroups[targetGroup].entities[targetIndex],
+          tp: newGroups[targetGroup].entities[targetIndex].tp + offset,
+        };
+        const newGroupEntities = [
+          ...newGroups[targetGroup].entities.slice(0, targetIndex),
+          newEntity,
+          ...newGroups[targetGroup].entities.slice(targetIndex + 1),
+        ];
+        newGroups = {
+          ...newGroups,
+          [targetGroup]: {
+            ...newGroups[targetGroup],
+            entities: newGroupEntities,
+          },
+        };
+      }
+
+      return {
+        ...state,
+        groups: newGroups,
+      };
+    }
     case QUEUE_ACTION: {
-      const { heroIndex: index, target, type } = payload;
+      const { heroIndex: index, target, type, techIndex, itemIndex } = payload;
 
       const newEntity = {
         ...state.groups[PLAYER_GROUP].entities[index],
         queuedAction: {
           type,
           target,
+          techIndex,
+          itemIndex,
         },
+      };
+      const newGroupEntities = [
+        ...state.groups[PLAYER_GROUP].entities.slice(0, index),
+        newEntity,
+        ...state.groups[PLAYER_GROUP].entities.slice(index + 1),
+      ];
+
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          [PLAYER_GROUP]: {
+            ...state.groups[PLAYER_GROUP],
+            entities: newGroupEntities,
+          },
+        },
+      };
+    }
+    case REMOVE_ENTITY_ITEM: {
+      const { target, itemIndex }: { target: TargetType; itemIndex: number } =
+        payload;
+      const { group, index } = target;
+
+      if (!group || Array.isArray(group) || index === undefined) {
+        return state;
+      }
+
+      const newInventory = [...state.groups[group].entities[index].inventory];
+      newInventory.splice(itemIndex, 1);
+      const newEntity = {
+        ...state.groups[group].entities[index],
+        inventory: newInventory,
       };
       const newGroupEntities = [
         ...state.groups[PLAYER_GROUP].entities.slice(0, index),

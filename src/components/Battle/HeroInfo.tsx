@@ -10,7 +10,6 @@ import {
   EXECUTING,
   GAME_WON,
   GAME_LOST,
-  ATTACK,
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
   RIGHT_ENEMY_GROUP,
@@ -18,23 +17,23 @@ import {
   POST_EXECUTION,
 } from '../../constants';
 import GameMenu from './GameMenu';
+import HeroMenu from './HeroMenu';
 import Window from '../Window';
-import Hero from './Hero';
+import HeroCard from './HeroCard';
+import AnimatedSprite from '../AnimatedSprite';
 
-const {
-  startNewRound: startNewRoundAction,
-  setPlayerInterrupt,
-  queueAction,
-} = actionCreators;
+const { startNewRound: startNewRoundAction, setPlayerInterrupt } =
+  actionCreators;
 
-const PlayerInfo = styled.section`
+const HeroInfoContainer = styled.section`
+  position: relative;
   display: flex;
   justify-content: center;
   flex: 0 0 22%;
   height: 22%;
 `;
 
-const PlayerMenu = styled(Window)`
+const PlayerButtons = styled(Window)`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,15 +42,18 @@ const PlayerMenu = styled(Window)`
 `;
 
 const PlayerButton = styled.button`
-  background-color: red;
-  padding: 5%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: white;
 `;
 
-const PlayerInfoSection = () => {
+const PlayerInfo = () => {
   const [state, dispatch] = useContext(AppStateContext);
-  const { gameState, queueIndex, playerInterrupt, groups } = state;
-  // TODO: looking like this will need to be global (need to access it in several places, and be able to reset, etc.)
-  const [activeHero, setActiveHero] = useState<number | undefined>();
+  const { gameState, queueIndex, playerInterrupt, groups, pixelMultiplier } =
+    state;
+  const [activeHeroIndex, setActiveHeroIndex] = useState<number | undefined>();
   const [gameMenuOpen, setGameMenuOpen] = useState<boolean>(false);
 
   const startNewRound = () => {
@@ -65,20 +67,19 @@ const PlayerInfoSection = () => {
   };
 
   const handleSelectHero = (index: number | undefined) => {
-    setActiveHero(index);
+    setActiveHeroIndex(activeHeroIndex === index ? undefined : index);
   };
 
   return (
-    <PlayerInfo>
+    <HeroInfoContainer>
       {Array.from(Array(4)).map((el, index) => {
         const hero = groups[PLAYER_GROUP].entities[index];
 
         return (
-          <Hero
+          <HeroCard
             key={hero?.name || `blank-hero-${index}`}
             hero={hero}
             index={index}
-            active={activeHero === index}
             handleSelect={
               gameState === INIT || gameState === PLAYER_INPUT
                 ? handleSelectHero
@@ -88,50 +89,19 @@ const PlayerInfoSection = () => {
         );
       })}
 
-      {activeHero !== undefined && (
-        <Window
-          style={{
-            position: 'absolute',
-            bottom: 230,
-            left: '50%',
-            transform: 'translateX(-50%)',
+      {activeHeroIndex !== undefined && (
+        <HeroMenu
+          activeHero={groups[PLAYER_GROUP].entities[activeHeroIndex]}
+          handleClose={() => {
+            setActiveHeroIndex(undefined);
           }}
-        >
-          <button
-            onClick={() => {
-              dispatch(
-                queueAction({
-                  heroIndex: activeHero,
-                  target: { group: LEFT_ENEMY_GROUP, index: 0 },
-                  type: ATTACK,
-                })
-              );
-              setActiveHero(undefined);
-            }}
-          >
-            Left Enemy Group
-          </button>
-          <button
-            onClick={() => {
-              dispatch(
-                queueAction({
-                  heroIndex: activeHero,
-                  target: { group: RIGHT_ENEMY_GROUP, index: 0 },
-                  type: ATTACK,
-                })
-              );
-              setActiveHero(undefined);
-            }}
-          >
-            Right Enemy Group
-          </button>
-        </Window>
+        />
       )}
 
-      <PlayerMenu>
-        <div>ATTK</div>
+      <PlayerButtons>
         <PlayerButton
           disabled={
+            activeHeroIndex !== undefined ||
             queueIndex !== null ||
             gameState === INIT ||
             gameState === NEW_GAME ||
@@ -139,10 +109,34 @@ const PlayerInfoSection = () => {
             gameState === GAME_LOST
           }
           onClick={startNewRound}
-        />
-        <div>ORDR</div>
-        <PlayerButton disabled onClick={() => {}} />
-        <button
+        >
+          <div
+            style={{
+              height: 8 * pixelMultiplier,
+              width: 14 * pixelMultiplier,
+              margin: '0 auto',
+            }}
+          >
+            <AnimatedSprite
+              height={8}
+              width={14}
+              spriteImg={'button-light'}
+              frames={
+                queueIndex !== null ||
+                gameState === GAME_WON ||
+                gameState === GAME_LOST
+                  ? [1]
+                  : [0]
+              }
+              style={{
+                height: '100%',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div>FGHT</div>
+        </PlayerButton>
+        <PlayerButton
           disabled={
             playerInterrupt ||
             queueIndex === null ||
@@ -152,8 +146,32 @@ const PlayerInfoSection = () => {
             dispatch(setPlayerInterrupt(true));
           }}
         >
-          Stop
-        </button>
+          <div
+            style={{
+              height: 8 * pixelMultiplier,
+              width: 14 * pixelMultiplier,
+              margin: '0 auto',
+            }}
+          >
+            <AnimatedSprite
+              height={8}
+              width={14}
+              spriteImg={'button-light'}
+              frames={
+                playerInterrupt ||
+                queueIndex === null ||
+                (gameState !== EXECUTING && gameState !== POST_EXECUTION)
+                  ? [1]
+                  : [0]
+              }
+              style={{
+                height: '100%',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div>STGY</div>
+        </PlayerButton>
         <button
           onClick={() => {
             dispatch(setPlayerInterrupt(true));
@@ -162,7 +180,7 @@ const PlayerInfoSection = () => {
         >
           Exit
         </button>
-      </PlayerMenu>
+      </PlayerButtons>
 
       {(gameMenuOpen ||
         gameState === INIT ||
@@ -174,8 +192,8 @@ const PlayerInfoSection = () => {
           }}
         />
       )}
-    </PlayerInfo>
+    </HeroInfoContainer>
   );
 };
 
-export default PlayerInfoSection;
+export default PlayerInfo;

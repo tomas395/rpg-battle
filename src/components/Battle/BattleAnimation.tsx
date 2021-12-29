@@ -15,10 +15,17 @@ import Window from '../Window';
 import Dissolve from '../Dissolve';
 import AnimatedSprite from '../AnimatedSprite';
 
-const BattleSection = styled.section`
+const BattleSpriteContainer = styled.section`
   position: relative;
   flex: 0 1 100%;
 `;
+
+const EnemySpriteContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 55%;
+`;
+const PlayerSpriteContainer = styled.div``;
 
 const MessageBox = styled(Window)`
   position: absolute;
@@ -28,7 +35,7 @@ const MessageBox = styled(Window)`
   margin-bottom: 14px;
 `;
 
-const MainBattleSection = () => {
+const BattleAnimation = () => {
   const [state] = useContext(AppStateContext);
   const { gameState, groups, pixelMultiplier } = state;
 
@@ -38,16 +45,18 @@ const MainBattleSection = () => {
   ];
 
   return (
-    <BattleSection>
-      <div style={{ position: 'relative', width: '100%', height: '55%' }}>
+    <BattleSpriteContainer>
+      <EnemySpriteContainer>
         {combinedEnemies.map(
           ({
             id,
-            type, // TODO: consider renaming this to entityType
+            name,
             status,
             leftPosition,
             currentAnimation,
             animations,
+            height,
+            width,
           }) => {
             const animationType = currentAnimation.type;
 
@@ -60,20 +69,20 @@ const MainBattleSection = () => {
                 key={id}
                 dissolving={gameState === NEW_GAME}
                 reverse
-                width={64}
+                width={width || 64}
                 style={{
                   position: 'absolute',
                   bottom: 0,
                   left: leftPosition,
-                  height: 64 * pixelMultiplier,
-                  width: 64 * pixelMultiplier,
+                  height: (height || 64) * pixelMultiplier,
+                  width: (width || 64) * pixelMultiplier,
                   transform: `translateX(-50%)`,
                 }}
               >
                 <AnimatedSprite
-                  height={64}
-                  width={64}
-                  spriteImg={type ? String(type).toLowerCase() : 'froggy'}
+                  height={height || 64}
+                  width={width || 64}
+                  spriteImg={String(name).toLowerCase()}
                   frames={frames}
                   duration={duration}
                   style={{
@@ -86,9 +95,9 @@ const MainBattleSection = () => {
             );
           }
         )}
-      </div>
+      </EnemySpriteContainer>
 
-      <div>
+      <PlayerSpriteContainer>
         {groups[PLAYER_GROUP].entities.map(
           (
             { id, name, status, leftPosition, currentAnimation, animations },
@@ -141,13 +150,13 @@ const MainBattleSection = () => {
             );
           }
         )}
-      </div>
+      </PlayerSpriteContainer>
 
       {Boolean(groups[PLAYER_GROUP].message) && (
         <MessageBox>{groups[PLAYER_GROUP].message}</MessageBox>
       )}
-    </BattleSection>
+    </BattleSpriteContainer>
   );
 };
 
-export default MainBattleSection;
+export default BattleAnimation;

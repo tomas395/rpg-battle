@@ -2,9 +2,9 @@ import { useContext, useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 
 import { AppStateContext } from '../../state';
-import EnemyGroupSection from './EnemyGroupSection';
-import MainBattleSection from './MainBattleSection';
-import PlayerInfoSection from './PlayerInfoSection';
+import EnemyInfo from './EnemyInfo';
+import BattleAnimation from './BattleAnimation';
+import HeroInfo from './HeroInfo';
 import { HURT, PLAYER_GROUP } from '../../constants';
 
 const BattleContainer = styled.div`
@@ -33,7 +33,6 @@ const BattleWindow = styled((props: any) => <div {...props} />)`
   width: 133.33vmin;
   overflow: hidden;
   outline: 4px solid #000088;
-
   background: url('/assets/battle-bg.png');
   background-size: auto 100%;
   ${({ bgFlash }: any) => {
@@ -66,9 +65,9 @@ const Battle = () => {
   return (
     <BattleContainer>
       <BattleWindow bgFlash={bgFlash}>
-        <EnemyGroupSection />
-        <MainBattleSection />
-        <PlayerInfoSection />
+        <EnemyInfo />
+        <BattleAnimation />
+        <HeroInfo />
       </BattleWindow>
     </BattleContainer>
   );

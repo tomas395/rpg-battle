@@ -1,12 +1,5 @@
-import { v4 as uuid } from 'uuid';
-
 import { EntityType } from './types';
 import {
-  EntityTypesEnum,
-  HERO_NAMES,
-  ATTACK,
-  HUMAN,
-  FROGGY,
   IDLE,
   SLASH,
   SHOOT,
@@ -14,7 +7,6 @@ import {
   TARGETED,
   HURT,
   DYING,
-  OK,
   GroupsEnum,
   PLAYER_GROUP,
   LEFT_ENEMY_GROUP,
@@ -36,6 +28,7 @@ export const generateEntity = ({
   defense,
   speed,
   inventory,
+  techniques,
   leftPosition,
   queuedAction,
   currentAnimation,
@@ -55,22 +48,14 @@ export const generateEntity = ({
   defense,
   speed,
   inventory,
+  techniques,
   leftPosition,
   queuedAction,
   currentAnimation,
   animations,
 });
 
-const generateHeroName = (index: number) => {
-  return HERO_NAMES[index] || `Hero-${index}`;
-};
-
-const generateEnemyName = (type: EntityTypesEnum, index: number) => {
-  return `${type}-${index}`;
-};
-
-// TODO: ts
-const generateEntityAnimations = (isEnemy: boolean) => ({
+export const generateEntityAnimations = (isEnemy: boolean) => ({
   [IDLE]: {
     frames: isEnemy ? [0, 1] : 0,
     duration: isEnemy ? 600 : 0,
@@ -90,8 +75,8 @@ const generateEntityAnimations = (isEnemy: boolean) => ({
     bottom: isEnemy ? undefined : 0,
   },
   [USE]: {
-    frames: 1,
-    duration: 1,
+    frames: [0, 1, 1, 1, 1, 1, 1, 1, 1],
+    duration: 2000,
     top: isEnemy ? 0 : undefined,
     bottom: isEnemy ? undefined : 0,
   },
@@ -115,91 +100,6 @@ const generateEntityAnimations = (isEnemy: boolean) => ({
   },
 });
 
-// TODO: attributes should be driven by 'type', NEI, ROLF, ROBOT, FROGGY, etc. and a default generic fallback
-export const generateHeroes = (count: number) => {
-  const heroes: EntityType[] = [];
-
-  for (let index = 0; index < count; index++) {
-    heroes.push(
-      generateEntity({
-        id: uuid(),
-        index,
-        group: PLAYER_GROUP,
-        type: HUMAN,
-        status: OK,
-        name: generateHeroName(index),
-        maxHp: 10,
-        hp: 10,
-        maxTp: 5,
-        tp: 5,
-        attack: 1,
-        defense: 3,
-        speed: 2,
-        inventory: [],
-        leftPosition: `${
-          index === 0 ? 40 : index === 1 ? 60 : index === 2 ? 20 : 80
-        }%`,
-        queuedAction: {
-          type: ATTACK,
-          target: {
-            group: LEFT_ENEMY_GROUP,
-            index: index === 1 ? undefined : 0,
-          },
-        },
-        currentAnimation: { type: IDLE },
-        animations: generateEntityAnimations(false),
-      })
-    );
-  }
-
-  return heroes;
-};
-
-export const generateEnemies = (
-  count: number,
-  type: EntityTypesEnum,
-  group: Exclude<GroupsEnum, GroupsEnum.PLAYER_GROUP>,
-  totalGroupSize: number,
-  offset?: number
-) => {
-  const enemies: EntityType[] = [];
-
-  for (let index = 0; index < count; index++) {
-    const realIndex = offset ? index + offset : index;
-
-    enemies.push(
-      generateEntity({
-        id: uuid(),
-        index,
-        group,
-        type,
-        status: OK,
-        name: generateEnemyName(type, index),
-        maxHp: type === FROGGY ? 10 : 20,
-        hp: type === FROGGY ? 10 : 20,
-        maxTp: type === FROGGY ? 5 : 0,
-        tp: type === FROGGY ? 5 : 0,
-        attack: 1,
-        defense: 3,
-        speed: type === FROGGY ? 1 : 3,
-        inventory: [],
-        leftPosition: `${
-          (group === RIGHT_ENEMY_GROUP ? realIndex + 1 : realIndex + 1) *
-          (100 / (totalGroupSize + 1))
-        }%`,
-        queuedAction: {
-          type: ATTACK,
-          target: { group: PLAYER_GROUP, index: 0 },
-        },
-        currentAnimation: { type: IDLE },
-        animations: generateEntityAnimations(true),
-      })
-    );
-  }
-
-  return enemies;
-};
-
 export const sortEntitiesBySpeed = (
   firstEntity: EntityType,
   secondEntity: EntityType
@@ -219,7 +119,7 @@ export const generateQueue = (entities: EntityType[]) => {
     .sort(sortEntitiesBySpeed)
     .map((entity) => {
       const { index, group, queuedAction, leftPosition } = entity;
-      const { type, target } = queuedAction;
+      const { type, target, techIndex, itemIndex } = queuedAction;
 
       // TODO: check equipped weapons, etc. determine what kind of action or actions to queue
 
@@ -227,8 +127,88 @@ export const generateQueue = (entities: EntityType[]) => {
         type,
         actor: { group, index, leftPosition },
         target,
+        techIndex,
+        itemIndex,
       };
       return [action];
     })
     .reduce((prev, curr) => [...prev, ...curr], []);
+};
+
+export const retarget = (
+  groups: any, // TODO: ts
+  actorGroup: GroupsEnum,
+  targetGroup: GroupsEnum | GroupsEnum[],
+  targetIndex?: number
+) => {
+  // retargeting logic
+  if (Array.isArray(targetGroup)) {
+    targetGroup.filter(
+      (group) =>
+        groups[group].entities.findIndex(({ hp }: { hp: number }) => hp > 0) !==
+        -1
+    );
+    // TODO: if no living entities in any target group maybe add some sort of skip flag to check below so we only show actor animation with no other effects
+  } else if (targetIndex === undefined) {
+    if (targetGroup !== PLAYER_GROUP) {
+      if (
+        groups[targetGroup].entities.findIndex(
+          ({ hp }: { hp: number }) => hp > 0
+        ) === -1
+      ) {
+        targetGroup =
+          targetGroup === LEFT_ENEMY_GROUP
+            ? RIGHT_ENEMY_GROUP
+            : LEFT_ENEMY_GROUP;
+      }
+    }
+  } else {
+    // TODO: this is hacky, we are checking to see if we have an index, then ignoring it and picking a random one
+    let livingTargetGroupEntities = groups[targetGroup].entities.filter(
+      (entity: EntityType) => entity.hp > 0
+    );
+
+    if (actorGroup === PLAYER_GROUP && livingTargetGroupEntities.length === 0) {
+      targetGroup =
+        targetGroup === LEFT_ENEMY_GROUP ? RIGHT_ENEMY_GROUP : LEFT_ENEMY_GROUP;
+
+      livingTargetGroupEntities = groups[targetGroup].entities.filter(
+        (entity: EntityType) => entity.hp > 0
+      );
+    }
+
+    targetIndex =
+      livingTargetGroupEntities[
+        Math.floor(Math.random() * livingTargetGroupEntities.length)
+      ].index;
+  }
+
+  const newTarget = {
+    group: targetGroup,
+    index: targetIndex,
+  };
+
+  return newTarget;
+};
+
+// TODO: need to consider only living entities
+export const getTargetLeftPosition = (
+  groups: any, // TODO: ts
+  targetGroup: GroupsEnum | GroupsEnum[],
+  targetIndex?: number
+) => {
+  // TODO: yeaaaa... we need to handle leftPosition percentage another way
+  return targetIndex !== undefined && !Array.isArray(targetGroup)
+    ? groups[targetGroup].entities[targetIndex].leftPosition
+    : !Array.isArray(targetGroup)
+    ? String(
+        (Number(groups[targetGroup].entities[0].leftPosition.replace('%', '')) +
+          Number(
+            groups[targetGroup].entities[
+              groups[targetGroup].entities.length - 1
+            ].leftPosition.replace('%', '')
+          )) /
+          2
+      ) + '%'
+    : '50%';
 };
