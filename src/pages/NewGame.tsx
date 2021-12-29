@@ -218,6 +218,7 @@ const NewGameMenu = () => {
         }}
         min={0}
         max={
+          // TODO: this is bugged
           leftEnemyType
             ? (totalSlots - rightSlots) / ENEMIES[leftEnemyType].size
             : 4
@@ -257,6 +258,7 @@ const NewGameMenu = () => {
         }}
         min={0}
         max={
+          // TODO: this is bugged
           rightEnemyType
             ? (totalSlots - leftSlots) / ENEMIES[rightEnemyType].size
             : 4

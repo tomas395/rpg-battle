@@ -32,6 +32,7 @@ import {
   loseGame,
   winGame,
   incrementQueueIndex,
+  removeEntityItem,
 } from './actionCreators';
 import { getTargetLeftPosition, retarget } from '../utils';
 
@@ -322,7 +323,135 @@ export const techThunk =
 
 export const itemThunk =
   (actor: ActorType, target: TargetType, itemIndex: number) =>
-  async (dispatch: Dispatch<ActionType>, getState: any) => {};
+  async (dispatch: Dispatch<ActionType>, getState: any) => {
+    const { groups } = getState();
+
+    const { group: actorGroup, index: actorIndex } = actor;
+    const actorEntity = groups[actorGroup].entities[actorIndex];
+    const { inventory } = actorEntity;
+
+    // TODO: retargeting logic needed?
+    const { group: targetGroup, index: targetIndex } = target;
+
+    const targetLeftPosition = getTargetLeftPosition(
+      groups,
+      targetGroup,
+      targetIndex
+    );
+
+    const selfTargeting =
+      actorGroup === targetGroup && actorIndex === targetIndex;
+
+    const itemData = inventory[itemIndex];
+    const { name, itemEffect, itemPower, consumable } = itemData || {};
+
+    dispatch(
+      setEntityAnimation(actor, {
+        type: USE,
+        left:
+          actorGroup === PLAYER_GROUP && targetGroup !== PLAYER_GROUP
+            ? targetLeftPosition
+            : undefined,
+      })
+    );
+
+    if (!selfTargeting) {
+      dispatch(
+        setEntityAnimation(target, {
+          type: TARGETED,
+          left:
+            actorGroup !== PLAYER_GROUP && targetIndex !== undefined
+              ? actorEntity.leftPosition
+              : undefined,
+        })
+      );
+    }
+
+    await timeout(ANIMATION_DURATION_MAP[USE]);
+
+    if (consumable) {
+      dispatch(removeEntityItem(actor, itemIndex));
+    }
+
+    if (selfTargeting) {
+      dispatch(setEntityAnimation(actor, { type: TARGETED, left: -1 }));
+    } else {
+      dispatch(setEntityAnimation(actor, { type: IDLE, left: -1 }));
+    }
+
+    dispatch(
+      setGroupMessage({
+        target: { group: PLAYER_GROUP },
+        message: name,
+      })
+    );
+
+    // TODO: FX animation, probably move animation and timeouts into switch below
+    await timeout(500);
+
+    switch (itemEffect) {
+      case DAMAGE: {
+        if (targetGroup !== PLAYER_GROUP) {
+          dispatch(
+            setGroupMessage({
+              target,
+              message: itemPower,
+            })
+          );
+        }
+        dispatch(
+          setEntityAnimation(target, {
+            type: HURT,
+            left: -1,
+          })
+        );
+        await timeout(ANIMATION_DURATION_MAP[HURT]);
+        dispatch(updateEntityHP(target, -itemPower));
+        break;
+      }
+      case HEAL: {
+        if (targetGroup !== PLAYER_GROUP) {
+          dispatch(
+            setGroupMessage({
+              target,
+              message: itemPower,
+            })
+          );
+        }
+        await timeout(1000);
+        dispatch(updateEntityHP(target, itemPower));
+        break;
+      }
+      case POISON: {
+        break;
+      }
+      case PARALYZE: {
+        break;
+      }
+      case SLEEP: {
+        break;
+      }
+    }
+
+    dispatch(
+      setGroupMessage({
+        target: { group: PLAYER_GROUP },
+        message: '',
+      })
+    );
+    if (targetGroup !== PLAYER_GROUP) {
+      dispatch(
+        setGroupMessage({
+          target,
+          message: '',
+        })
+      );
+    }
+    dispatch(setEntityAnimation(target, { type: IDLE, left: -1 }));
+
+    // need to dispatch this at the end of any queue action to progress the queue
+    dispatch(setGameState(POST_EXECUTION));
+  };
 
 export const postExecutionThunk =
   () => async (dispatch: Dispatch<ActionType>, getState: any) => {

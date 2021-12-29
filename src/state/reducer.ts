@@ -24,6 +24,7 @@ const {
   SET_ENTITY_ANIMATION,
   UPDATE_ENTITY_HP,
   UPDATE_ENTITY_TP,
+  REMOVE_ENTITY_ITEM,
 } = actionTypes;
 
 const reducer = (state: AppStateType, action: ActionType) => {
@@ -380,6 +381,38 @@ const reducer = (state: AppStateType, action: ActionType) => {
           techIndex,
           itemIndex,
         },
+      };
+      const newGroupEntities = [
+        ...state.groups[PLAYER_GROUP].entities.slice(0, index),
+        newEntity,
+        ...state.groups[PLAYER_GROUP].entities.slice(index + 1),
+      ];
+
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          [PLAYER_GROUP]: {
+            ...state.groups[PLAYER_GROUP],
+            entities: newGroupEntities,
+          },
+        },
+      };
+    }
+    case REMOVE_ENTITY_ITEM: {
+      const { target, itemIndex }: { target: TargetType; itemIndex: number } =
+        payload;
+      const { group, index } = target;
+
+      if (!group || Array.isArray(group) || index === undefined) {
+        return state;
+      }
+
+      const newInventory = [...state.groups[group].entities[index].inventory];
+      newInventory.splice(itemIndex, 1);
+      const newEntity = {
+        ...state.groups[group].entities[index],
+        inventory: newInventory,
       };
       const newGroupEntities = [
         ...state.groups[PLAYER_GROUP].entities.slice(0, index),

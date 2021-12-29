@@ -81,6 +81,7 @@ const BattlePage = () => {
         }
 
         // TODO: determine whether or not to update/reset queuedAction for actor
+        // - reset to ATTACK/DEFEND if ITEM or insufficient TP to execute queued TECH
 
         // TODO: ideally we would be able to wait for actionCreator to finish and then dispatch gameState: POST_EXECUTION here (should be doable since no new state is needed)
       } else {

@@ -19,7 +19,7 @@ const { MONOMATE } = ITEMS;
 const { KNIFE, STEEL_BAR, SHOTGUN } = WEAPONS;
 const { CARBON_EMEL, CARBON_SHIELD } = SHIELDS;
 const { HEADGEAR, RIBBON } = ARMOR;
-const { RES, FOI } = TECHNIQUES;
+const { RES, FOI, GIFOI } = TECHNIQUES;
 
 const HERO_DATA = {
   [ROLF]: {
@@ -38,7 +38,7 @@ const HERO_DATA = {
       rightHand: KNIFE,
       head: HEADGEAR,
     },
-    techniques: [RES, FOI],
+    techniques: [RES, FOI, GIFOI],
     animations: generateEntityAnimations(false),
     queuedAction: {
       type: ATTACK,

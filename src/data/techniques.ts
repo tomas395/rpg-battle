@@ -1,4 +1,4 @@
-import { DAMAGE, ENTITY, GROUP, HEAL } from '../constants';
+import { ALL, DAMAGE, ENTITY, GROUP, HEAL } from '../constants';
 
 const ITEMS = {
   RES: {
@@ -16,9 +16,16 @@ const ITEMS = {
     power: 14, // TODO: add support for value ranges
     tp: 2,
   },
+  GIFOI: {
+    name: 'GIFOI',
+    targetType: GROUP,
+    effect: DAMAGE,
+    power: 20,
+    tp: 5,
+  },
   LIGHTNING: {
     name: 'LIGHTNING',
-    targetType: GROUP,
+    targetType: ALL,
     effect: DAMAGE,
     power: 100,
     tp: 5,

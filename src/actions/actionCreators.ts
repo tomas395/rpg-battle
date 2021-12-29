@@ -14,6 +14,7 @@ import {
   SET_ENTITY_STATUS,
   UPDATE_ENTITY_HP,
   UPDATE_ENTITY_TP,
+  REMOVE_ENTITY_ITEM,
 } from './actionTypes';
 import { TargetType, EntityActionType } from '../types';
 import {
@@ -124,4 +125,9 @@ export const updateEntityHP = (target: TargetType, offset: number) => ({
 export const updateEntityTP = (target: TargetType, offset: number) => ({
   type: UPDATE_ENTITY_TP,
   payload: { target, offset },
+});
+
+export const removeEntityItem = (target: TargetType, itemIndex: number) => ({
+  type: REMOVE_ENTITY_ITEM,
+  payload: { target, itemIndex },
 });
